@@ -6,7 +6,7 @@ const colors = {
     success: '#2ecc71',
     info: '#3498db',
     dark: '#393E46',
-    light: '#EEEEEE',
+    light: '#E3FDFD',
 };
 
 export const getColor = (colorName) => {

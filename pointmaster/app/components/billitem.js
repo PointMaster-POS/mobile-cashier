@@ -1,9 +1,23 @@
-import React from "react";
+import React , {useState, useEffect} from "react";
 import { Text, View, StyleSheet, Button, Image } from "react-native";
 import { FontAwesome, AntDesign } from "react-native-vector-icons";
 import { getColor } from "../../utils/colorprovider";
 const BillItem = ({ item }) => {
-  console.log(item);
+    //create state to handle quantity
+    const [quantity, setQuantity] = useState(1);
+
+    //increase and decrease quantity
+    const handleAdd = () => {
+        setQuantity(quantity + 1);
+    };
+    const handleMinus = () => {
+        if (quantity > 1) {
+            setQuantity(quantity - 1);
+        }
+    };
+    
+  
+
   return (
     <View style={Styles.itemContainer}>
       <View style={Styles.imageDetailContainer}>
@@ -21,21 +35,17 @@ const BillItem = ({ item }) => {
         <AntDesign
           name="minuscircleo"
           size={24}
-          color="black"
-          style={{
-            color: getColor("secondary"),
-          }}
+          color={getColor("primary")}
+          onPress={handleMinus}
         />
 
-        <Text style={Styles.quantityText}>1</Text>
+        <Text style={Styles.quantityText}>{quantity}</Text>
 
         <AntDesign
           name="pluscircleo"
           size={24}
-          color="black"
-          style={{
-            color: getColor("secondary"),
-          }}
+          color={getColor("primary")}
+          onPress={handleAdd}
         />
       </View>
     </View>
@@ -68,6 +78,7 @@ const Styles = StyleSheet.create({
 
     borderWidth: 1,
     borderColor: getColor("primary"),
+    backgroundColor: getColor("light"),
     borderRadius: 10,
     margin: 10,
   },
