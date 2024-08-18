@@ -4,7 +4,7 @@ import { FontAwesome, AntDesign } from "react-native-vector-icons";
 import { getColor } from "../../utils/colorprovider";
 const BillItem = ({ item }) => {
     //create state to handle quantity
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(item.quantity);
 
     //increase and decrease quantity
     const handleAdd = () => {
@@ -28,7 +28,7 @@ const BillItem = ({ item }) => {
         />
         <View style={Styles.detailContainer}>
           <Text style={Styles.itemName}>{item.name}</Text>
-          <Text style={Styles.itemPrice}>Rs. {item.price}</Text>
+          <Text style={Styles.itemPrice}>Rs. {item.price * quantity}</Text>
         </View>
       </View>
       <View style={Styles.quantityContainer}>

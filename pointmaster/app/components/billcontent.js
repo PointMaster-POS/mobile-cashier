@@ -4,41 +4,39 @@ import {View, Text, StyleSheet, ScrollView
 } from 'react-native';
 import BillItem from './billitem';
 
-const BillItems = [
-    {
-        name: 'Chiken Burger',
-        imageUrl: 'https://png.pngtree.com/png-vector/20231016/ourmid/pngtree-burger-food-png-free-download-png-image_10199386.png',
-        price: 100,
-    },
-    {
-        name: 'cappuccino',
-        imageUrl: 'https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr',
-        price: 200,
-    },
-    {
-        name: 'sandwich',
-        imageUrl: 'https://png.pngtree.com/png-vector/20231016/ourmid/pngtree-burger-food-png-free-download-png-image_10199386.png',
-        price: 300,
-    }
-   
-];
 
-const BillContent = () => {
+const BillContent = (items) => {
     //item list for bill
-    const [billItems, setBillItems] = useState([]);
+    const [billItems, setBillItems] = useState(items);
+    
 
-    useEffect(() => {
-        setBillItems(BillItems);
-    }, []);
+    // useEffect(() => {
+    //     setBillItems();
+    // }, []);
 
+    //add product to bill
+    // const addProductToBill = (qr) => {
+    //     const item = BillItems.find((item) => item.qr === qr);
+    //     if (item) {
+    //         setBillItems([...billItems, item]);
+    //     }
+    // };
    
+    useEffect(() => {
+        setBillItems(items);
+        
+    }, [items]);
+    
    
     return(
         <View style = {Styles.billContainer}> 
-            <Text style = {Styles.header}>Bill Content</Text>
+            <View style = {Styles.billHeaderContainer}>
+            <Text style = {Styles.header}>Bill Content </Text>
+            {billItems?.length > 0 && <Text> Total: {billItems.reduce((acc, item) => acc + item.price* item.quantity, 0)} </Text>}
+            </View>
             <ScrollView style = {Styles.outerItems}>
-                {billItems.map((item, index) => (
-                    <BillItem key = {index} item = {item} />
+                { billItems.items.map((item, index) => (
+                    <BillItem key = {index} item = {item} /> 
                 ))}
             </ScrollView>
         </View>
@@ -47,6 +45,11 @@ const BillContent = () => {
 }
 
 const Styles = StyleSheet.create({
+    billHeaderContainer: {
+        width: '100%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     outerItems: {
         width: '100%',
         height: '100%',
