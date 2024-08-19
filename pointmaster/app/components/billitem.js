@@ -2,17 +2,17 @@ import React , {useState, useEffect} from "react";
 import { Text, View, StyleSheet, Button, Image } from "react-native";
 import { FontAwesome, AntDesign } from "react-native-vector-icons";
 import { getColor } from "../../utils/colorprovider";
-const BillItem = ({ item }) => {
+const BillItem = ({ item , increaseQuantity, decreaseQuantity}) => {
     //create state to handle quantity
     const [quantity, setQuantity] = useState(item.quantity);
 
     //increase and decrease quantity
     const handleAdd = () => {
-        setQuantity(quantity + 1);
+        increaseQuantity(item.qr.trim().toLowerCase());
     };
     const handleMinus = () => {
         if (quantity > 1) {
-            setQuantity(quantity - 1);
+            decreaseQuantity(item.qr.trim().toLowerCase());
         }
     };
     

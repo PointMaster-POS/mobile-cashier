@@ -1,15 +1,17 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import Main from './app/(tabs)/main';
-import { BillProvider } from './Context/billcontext';
+
+import Checkout from './app/(tabs)/checkout';
+import Menu from './app/(tabs)/menu';
+
 
 export default function App() {
     return (
-        <BillProvider>
+   
             <SafeAreaView style={styles.container}>
-                <Main />
+                <Menu />
             </SafeAreaView>
-        </BillProvider>
+
     );
 }
 

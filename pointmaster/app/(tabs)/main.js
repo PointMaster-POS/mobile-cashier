@@ -73,11 +73,37 @@ const Main = () => {
             alert('Item not found');
         }
     };
+
+    const increaseQuantity = (qr) => {
+        const updatedItems = billItems.map((billItem) => {
+            if (billItem.qr.trim().toLowerCase() === qr.trim().toLowerCase()) {
+                return {
+                    ...billItem,
+                    quantity: billItem.quantity + 1,
+                };
+            }
+            return billItem;
+        });
+        setBillItems(updatedItems);
+    }
+
+    const decreaseQuantity = (qr) => {
+        const updatedItems = billItems.map((billItem) => {
+            if (billItem.qr.trim().toLowerCase() === qr.trim().toLowerCase()) {
+                return {
+                    ...billItem,
+                    quantity: billItem.quantity - 1,
+                };
+            }
+            return billItem;
+        });
+        setBillItems(updatedItems);
+    }
     
 
     return (
         <SafeAreaView style={styles.container}>
-            <BillContent items={{bill: billItems, i : i}} />
+            <BillContent items={{bill: billItems, i : i}} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} />
             <BarcodeScanner addProductToBill={addProductToBill} />
         </SafeAreaView>
     );
