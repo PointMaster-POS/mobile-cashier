@@ -1,23 +1,26 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import { BillContext } from '../../context/BillContext'; 
+import { useNavigation } from '@react-navigation/native';
+
 const Menu = () => {
     const navigation = useNavigation();
+    const { billItems, addProductToBill, i } = useContext(BillContext); 
     const [selectedCategory, setSelectedCategory] = useState('Favorite');
-
-    const _handlePressButtonAsync = async () => {
-        navigation.navigate("Checkout");
-      };
 
     const categories = ['Favorite', 'Hot Drink', 'Food', 'Soft Drink', 'Alcohol'];
     const items = [
         { name: 'Cappuccino', price: 8, imageUrl: 'https://example.com/cappuccino.jpg', category: 'Favorite' },
         { name: 'Matcha Latte', price: 10, imageUrl: 'https://example.com/matcha-latte.jpg', category: 'Favorite' },
-        { name: 'Iced Coffee', price: 8, imageUrl: 'https://example.com/iced-coffee.jpg', category: 'Soft Drink' },
-        { name: 'Fruit Smoothies', price: 7, imageUrl: 'https://example.com/fruit-smoothies.jpg', category: 'Soft Drink' },
-        { name: 'Chicken Burger', price: 12, imageUrl: 'https://example.com/chicken-burger.jpg', category: 'Food' },
+      
     ];
 
+    const handledAsyncNavigation = async () => {
+        navigation.navigate('Checkout');
+    };
+
+    //render category buttons to the screen
+    
     const renderCategory = (category) => (
         <TouchableOpacity 
             key={category} 
@@ -31,6 +34,8 @@ const Menu = () => {
         </TouchableOpacity>
     );
 
+    //render category items to the screen
+
     const renderItem = ({ item }) => (
         item.category === selectedCategory && (
             <View style={styles.item}>
@@ -40,11 +45,7 @@ const Menu = () => {
                     <Text style={styles.itemPrice}>${item.price}</Text>
                 </View>
                 <View style={styles.itemQuantity}>
-                    <TouchableOpacity style={styles.quantityButton}>
-                        <Text style={styles.quantityText}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.quantityText}>1</Text>
-                    <TouchableOpacity style={styles.quantityButton}>
+                    <TouchableOpacity style={styles.quantityButton} onPress={() => addProductToBill(item)}>
                         <Text style={styles.quantityText}>+</Text>
                     </TouchableOpacity>
                 </View>
@@ -55,13 +56,9 @@ const Menu = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.categoriesContainer}>
-            <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false} 
-                contentContainerStyle={styles.categoriesContainer}
-            style={styles.categoriesContainer}>
-                {categories.map(renderCategory)}
-            </ScrollView>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesContainer}>
+                    {categories.map(renderCategory)}
+                </ScrollView>
             </View>
             <FlatList
                 data={items}
@@ -69,9 +66,9 @@ const Menu = () => {
                 keyExtractor={item => item.name}
                 style={styles.itemsContainer}
             />
-            <TouchableOpacity style={styles.orderButton} onPress = {_handlePressButtonAsync}>
+            <TouchableOpacity style={styles.orderButton} onPress = {handledAsyncNavigation}>
                 <Text style={styles.orderButtonText}>Proceed New Order</Text>
-                <Text style={styles.orderButtonText}>3 Items $28</Text>
+                <Text style={styles.orderButtonText}>{i} Items ${billItems.reduce((total, item) => total + item.price * item.quantity, 0)}</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );
@@ -86,17 +83,14 @@ const styles = StyleSheet.create({
     },
     categoriesContainer: {
         flexDirection: 'row',
-        height: 100,
+        justifyContent: 'space-around',
         paddingVertical: 10,
         backgroundColor: '#fff',
     },
     categoryButton: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        marginHorizontal: 5,
         borderRadius: 20,
-        height: 50,
-        justifyContent: 'center',
         backgroundColor: '#eee',
     },
     categoryButtonSelected: {
