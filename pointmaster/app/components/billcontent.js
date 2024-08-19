@@ -5,7 +5,7 @@ import {View, Text, StyleSheet, ScrollView
 import BillItem from './billitem';
 
 
-const BillContent = (items) => {
+const BillContent = (items, i) => {
     //item list for bill
     const [billItems, setBillItems] = useState(items);
     
@@ -24,8 +24,9 @@ const BillContent = (items) => {
    
     useEffect(() => {
         setBillItems(items);
+        console.log("iiii", i);
         
-    }, [items]);
+    }, [i]);
     
    
     return(

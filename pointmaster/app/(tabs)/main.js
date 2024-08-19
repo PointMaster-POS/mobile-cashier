@@ -1,52 +1,54 @@
-
 import BarcodeScanner from '../components/barcodeScanner';
 import BillContent from '../components/billcontent';
-import {SafeAreaView, Text, Button, StyleSheet, View} from 'react-native';
-import React, {useState, useEffect} from 'react';
-
-const BillItems = [
-    {
-        name: 'Chiken Burger',
-        imageUrl: 'https://png.pngtree.com/png-vector/20231016/ourmid/pngtree-burger-food-png-free-download-png-image_10199386.png',
-        price: 100,
-        quantity: 1,
-        qr : 'chic-bur',
-    },
-    {
-        name: 'cappuccino',
-        imageUrl: 'https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr',
-        price: 200,
-        quantity: 1,
-        qr : 'cap',
-    },
-    {
-        name: 'sandwich',
-        imageUrl: 'https://png.pngtree.com/png-vector/20231016/ourmid/pngtree-burger-food-png-free-download-png-image_10199386.png',
-        price: 300,
-        quantity: 1,
-        qr : 'sand',
-    }
-   
-];
+import { SafeAreaView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
 
 
 
 const Main = () => {
+
+    const [i, setI] = useState(0);
+    const BillItems = [
+        {
+            name: 'Chicken Burger',
+            imageUrl: 'https://png.pngtree.com/png-vector/20231016/ourmid/pngtree-burger-food-png-free-download-png-image_10199386.png',
+            price: 100,
+            qr: 'chic-bur',
+        },
+        {
+            name: 'Cappuccino',
+            imageUrl: 'https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr',
+            price: 200,
+            qr: 'cap',
+        },
+        {
+            name: 'Sandwich',
+            imageUrl: 'https://png.pngtree.com/png-vector/20231016/ourmid/pngtree-burger-food-png-free-download-png-image_10199386.png',
+            price: 300,
+            qr: 'sand',
+        }
+    ];
     const [billItems, setBillItems] = useState([]);
 
-
     const addProductToBill = (qr) => {
-
-        //need to fetch the item from the qr code (note)
-        const item = BillItems.find((item) => item.qr === qr);
+        console.log('Scanned QR:', qr);
+    
+        const item = BillItems.find((item) => item.qr.trim().toLowerCase() === qr.trim().toLowerCase());
+        console.log('Found Item:', item);
+    
         if (item) {
-            //check if the item is already in the bill
-            const existingItem = billItems.find((billItem) => billItem.qr === qr);
+            console.log('bill items:', billItems);
+            const existingItem = billItems.find((billItem) => {
+                console.log('Checking Item:', billItem.qr);
+                return billItem.qr.trim().toLowerCase() === qr.trim().toLowerCase();
+            });
+            console.log('Existing Item:', existingItem);
             if (existingItem) {
-                //increase the quantity of the existing item
-                
-                const newItems = billItems.map((billItem) => {
-                    if (billItem.qr === qr) {
+                console.log('Existing Item Found:', existingItem);
+            
+                const updatedItems = billItems.map((billItem) => {
+                    if (billItem.qr.trim().toLowerCase() === qr.trim().toLowerCase()) {
+                        console.log('Updating Item:', billItem);
                         return {
                             ...billItem,
                             quantity: billItem.quantity + 1,
@@ -54,36 +56,34 @@ const Main = () => {
                     }
                     return billItem;
                 });
-                setBillItems(newItems);
+            
+                console.log('Updated Items:', updatedItems);
+                setBillItems(updatedItems);
+                setI(i+1);
             } else {
-                //add the item to the bill
-                setBillItems([...billItems, item]);
+                console.log('Adding New Item:', item);
+                const newItem = {
+                    ...item,
+                    quantity: 1,
+                };
+                setBillItems([...billItems, newItem]);
+                setI(i+1);
             }
-            
-            
+        } else {
+            alert('Item not found');
         }
-        console.log(item);
-    } 
-
+    };
     
-
-    
-   
-    
-    // useEffect(() => {
-    //     setBillItems(BillItems);
-    // }, []);
 
     return (
-        <SafeAreaView style = {styles.container} >
-           <BillContent items = {billItems} />
-           <BarcodeScanner  addProductToBill = {addProductToBill} />
+        <SafeAreaView style={styles.container}>
+            <BillContent items={billItems} i = {i} />
+            <BarcodeScanner addProductToBill={addProductToBill} />
         </SafeAreaView>
     );
 }
 
 export default Main;
-
 
 
 const styles = StyleSheet.create({
