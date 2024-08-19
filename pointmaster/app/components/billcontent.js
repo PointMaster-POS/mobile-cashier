@@ -5,10 +5,10 @@ import {View, Text, StyleSheet, ScrollView
 import BillItem from './billitem';
 
 
-const BillContent = (items, i) => {
+const BillContent = (items) => {
     //item list for bill
     const [billItems, setBillItems] = useState(items);
-    
+  
 
     // useEffect(() => {
     //     setBillItems();
@@ -23,10 +23,11 @@ const BillContent = (items, i) => {
     // };
    
     useEffect(() => {
-        setBillItems(items);
-        console.log("iiii", i);
+        setBillItems(items.items.bill);
+        console.log("iiii", items.items.i);
         
-    }, [i]);
+    }, [items.items.i]);
+   
     
    
     return(
@@ -36,7 +37,7 @@ const BillContent = (items, i) => {
             {billItems?.length > 0 && <Text> Total: {billItems.reduce((acc, item) => acc + item.price* item.quantity, 0)} </Text>}
             </View>
             <ScrollView style = {Styles.outerItems}>
-                { billItems.items.map((item, index) => (
+                { billItems.map((item, index) => (
                     <BillItem key = {index} item = {item} /> 
                 ))}
             </ScrollView>

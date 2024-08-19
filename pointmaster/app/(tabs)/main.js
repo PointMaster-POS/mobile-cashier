@@ -77,7 +77,7 @@ const Main = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <BillContent items={billItems} i = {i} />
+            <BillContent items={{bill: billItems, i : i}} />
             <BarcodeScanner addProductToBill={addProductToBill} />
         </SafeAreaView>
     );

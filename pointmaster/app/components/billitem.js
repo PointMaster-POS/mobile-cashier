@@ -16,6 +16,9 @@ const BillItem = ({ item }) => {
         }
     };
     
+    useEffect(() => {
+        setQuantity(item.quantity);
+    }, [item.quantity]);
   
 
   return (
