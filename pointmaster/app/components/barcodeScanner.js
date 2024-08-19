@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-impo
 import { Text, View, StyleSheet, Button } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { BillContext } from '../../context/BillContext';
@@ -32,11 +31,18 @@ export default function BarcodeScanner() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    //call addProductToBill function with the scanned data
-    addProductToBill(data);
+
+    // Here you should transform the scanned data into the appropriate item object.
+    // Example:
+    const item = {
+      qr: data, // Assuming 'data' is the QR code or barcode scanned
+      name: 'Scanned Item', // This should be fetched from a database or pre-defined list
+      price: 2.5, // The price should also be fetched accordingly
+      quantity: 1
+    };
+
+    addProductToBill(item);  // Pass the item object to the context function
     console.log(data);
-  
-    
   };
 
   if (hasPermission === null) {
@@ -72,12 +78,10 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-
   },
   buttonContainer: {
     flex: 1,
     justifyContent: "center",
-   
   },
   barcodeContainer: {
     width: "90%",
@@ -85,8 +89,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     justifyContent: "center",
     borderRadius: 10,
-    marginTop : 10,
-    
+    marginTop: 10,
   },
   barcodeScanner: {
     width: "100%",

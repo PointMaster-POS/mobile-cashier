@@ -1,11 +1,13 @@
 import React, { createContext, useEffect, useState } from 'react';
 
 export const BillContext = createContext();
-
+const categoriesAll = ['Favorite', 'Hot Drink', 'Food', 'Soft Drink', 'Alcohol'];
 const BillItems = [
     {
         qr: '123456789',
         name: 'Coca Cola',
+        category: 'Soft Drink',
+
         price: 2.5,
         quantity: 1,
     },
@@ -30,11 +32,13 @@ const BillItems = [
 ];
 
 export const BillProvider = ({ children }) => {
+    const [categories, setCategories] = useState([]);
     const [billItems, setBillItems] = useState([]);
     const [i, setI] = useState(0);
 
     useEffect(() => {
         setBillItems(BillItems);
+        setCategories(categoriesAll);
     }, []);
 
     const addProductToBill = (item) => {
@@ -85,7 +89,7 @@ export const BillProvider = ({ children }) => {
     };
 
     return (
-        <BillContext.Provider value={{ billItems, addProductToBill, increaseQuantity, decreaseQuantity, i }}>
+        <BillContext.Provider value={{ categories, billItems, addProductToBill, increaseQuantity, decreaseQuantity, i }}>
             {children}
         </BillContext.Provider>
     );

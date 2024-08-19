@@ -13,7 +13,7 @@ export default function App() {
     <BillProvider>
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen name="Menu" component={Menu} /> */}
+          <Stack.Screen name="Menu" component={Menu} />
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="Checkout" component={Checkout} />
         </Stack.Navigator>

@@ -5,22 +5,19 @@ import { useNavigation } from '@react-navigation/native';
 
 const Menu = () => {
     const navigation = useNavigation();
-    const { billItems, addProductToBill, i } = useContext(BillContext); 
+    //get state from bill context
+   
+    const { billItems, increaseQuantity, decreaseQuantity,categories, i } = useContext(BillContext); 
     const [selectedCategory, setSelectedCategory] = useState('Favorite');
 
-    const categories = ['Favorite', 'Hot Drink', 'Food', 'Soft Drink', 'Alcohol'];
-    const items = [
-        { name: 'Cappuccino', price: 8, imageUrl: 'https://example.com/cappuccino.jpg', category: 'Favorite' },
-        { name: 'Matcha Latte', price: 10, imageUrl: 'https://example.com/matcha-latte.jpg', category: 'Favorite' },
-      
-    ];
 
     const handledAsyncNavigation = async () => {
         navigation.navigate('Checkout');
     };
-
+    console.log(billItems);
+    console.log(categories);
     //render category buttons to the screen
-    
+
     const renderCategory = (category) => (
         <TouchableOpacity 
             key={category} 
@@ -40,12 +37,17 @@ const Menu = () => {
         item.category === selectedCategory && (
             <View style={styles.item}>
                 <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+                <View style={styles.itemQuantity}>
+                    <TouchableOpacity style={styles.quantityButton} onPress={() => decreaseQuantity(item.qr.trim().toLowerCase())}>
+                        <Text style={styles.quantityText}>-</Text>
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.itemDetails}>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemPrice}>${item.price}</Text>
                 </View>
                 <View style={styles.itemQuantity}>
-                    <TouchableOpacity style={styles.quantityButton} onPress={() => addProductToBill(item)}>
+                    <TouchableOpacity style={styles.quantityButton} onPress={() => increaseQuantity(item.qr.trim().toLowerCase())}>
                         <Text style={styles.quantityText}>+</Text>
                     </TouchableOpacity>
                 </View>
@@ -61,7 +63,7 @@ const Menu = () => {
                 </ScrollView>
             </View>
             <FlatList
-                data={items}
+                data={billItems}
                 renderItem={renderItem}
                 keyExtractor={item => item.name}
                 style={styles.itemsContainer}
