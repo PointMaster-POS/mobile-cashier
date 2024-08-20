@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { BillContext } from '../../context/BillContext';
+import { BillContext } from '../../context/billcontext';
+import { AntDesign } from 'react-native-vector-icons';
 
 export default function BarcodeScanner() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -56,9 +57,14 @@ export default function BarcodeScanner() {
     <View style={styles.container}>
       {scanned ? (
         <View style={styles.buttonContainer}>
-          <Button title={"Add another item"} onPress={handleAddItem} />
-          <Button title={"Cancel"} onPress={handleCancel} />
-          <Button title={"Proceed"} onPress={handleProceed} />
+          
+          <TouchableOpacity style={[styles.buttonContainer]} onPress={handleAddItem}>
+
+            <Text style={styles.buttonText}>Add More</Text>
+            <AntDesign name= "pluscircle" size={24} color="#e3d1f9" />
+
+          </TouchableOpacity>
+         
         </View>
       ) : (
         <View style={styles.barcodeContainer}>
@@ -80,8 +86,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonContainer: {
-    flex: 1,
-    justifyContent: "center",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: "100%",
+    width: "90%",
+    borderRadius: 10,
+    margin: 10,
+    backgroundColor: "#5e48a6",
+    paddingHorizontal: 40,
+
+    
+  
+    
   },
   barcodeContainer: {
     width: "90%",
@@ -94,5 +112,11 @@ const styles = StyleSheet.create({
   barcodeScanner: {
     width: "100%",
     height: "100%",
+  },
+  buttonText: {
+    color: "#e3d1f9",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

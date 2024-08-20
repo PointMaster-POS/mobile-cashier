@@ -1,170 +1,170 @@
-import React, { useContext, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { BillContext } from '../../context/BillContext'; 
-import { useNavigation } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
+import { BillContext } from "../../context/billcontext";
+import { useNavigation } from "@react-navigation/native";
+import CheckOutButton from "../components/checkout-button";
+import MenuItem from "../components/menu-item";
+import InitialMenuItem from "../components/initialmenuitem";
+
+//nedd to fetach all the items related to selected category
+const MenuItems = [
+  {
+    qr: "123456789",
+    name: "Coca Cola",
+    category: "Soft Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+    price: 2.5,
+  },
+  {
+    qr: "987654321",
+    name: "Fanta",
+    category: "Soft Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+
+    price: 2.5,
+  },
+  {
+    qr: "123123123",
+    name: "Sprite",
+    category: "Hot Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+
+    price: 2.5,
+  },
+  {
+    qr: "321321321",
+    name: "Pepsi",
+    category: "Soft Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+
+    price: 2.5,
+  },
+];
 
 const Menu = () => {
-    const navigation = useNavigation();
-    //get state from bill context
+  const navigation = useNavigation();
+  //get state from bill context
+
+  const {
+    billItems,
+    increaseQuantity,
+    decreaseQuantity,
+    categories,
+    i,
+    total,
+  } = useContext(BillContext);
+  const [selectedCategory, setSelectedCategory] = useState("Favorite");
+
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    setItems(MenuItems);
+  }, []);
+
+
+  //render category buttons to the screen
+
+  const renderCategory = (category) => (
+    <TouchableOpacity
+      key={category}
+      style={[
+        styles.categoryButton,
+        selectedCategory === category && styles.categoryButtonSelected,
+      ]}
+      onPress={() => setSelectedCategory(category)}
+    >
+      <Text style={styles.categoryButtonText}>{category}</Text>
+    </TouchableOpacity>
+  );
+
+  //render category items to the screen
+
+  const renderItem = ({ item }) => {
    
-    const { billItems, increaseQuantity, decreaseQuantity,categories, i, total } = useContext(BillContext); 
-    const [selectedCategory, setSelectedCategory] = useState('Favorite');
-
-
-    const handledAsyncNavigation = async () => {
-        navigation.navigate('Checkout');
-    };
-    console.log(billItems);
-    console.log(categories);
-    //render category buttons to the screen
-
-    const renderCategory = (category) => (
-        <TouchableOpacity 
-            key={category} 
-            style={[
-                styles.categoryButton, 
-                selectedCategory === category && styles.categoryButtonSelected
-            ]}
-            onPress={() => setSelectedCategory(category)}
-        >
-            <Text style={styles.categoryButtonText}>{category}</Text>
-        </TouchableOpacity>
-    );
-
-
-    //render category items to the screen
-
-    const renderItem = ({ item }) => (
-        item.category === selectedCategory && (
-            <View style={styles.item}>
-                <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
-                <View style={styles.itemQuantity}>
-                    <TouchableOpacity style={styles.quantityButton} onPress={() => decreaseQuantity(item.qr.trim().toLowerCase())}>
-                        <Text style={styles.quantityText}>-</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.itemDetails}>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                    <Text style={styles.itemPrice}>${item.price}</Text>
-                </View>
-                <View style={styles.itemQuantity}>
-                    <TouchableOpacity style={styles.quantityButton} onPress={() => increaseQuantity(item.qr.trim().toLowerCase())}>
-                        <Text style={styles.quantityText}>+</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        )
-    );
-
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.categoriesContainer}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesContainer}>
-                    {categories.map(renderCategory)}
-                </ScrollView>
-            </View>
-            <FlatList
-                data={billItems}
-                renderItem={renderItem}
-                keyExtractor={item => item.name}
-                style={styles.itemsContainer}
-            />
-            <TouchableOpacity style={styles.orderButton} onPress = {handledAsyncNavigation}>
-                <Text style={styles.orderButtonText}>Proceed New Order</Text>
-                <Text style={styles.orderButtonText}>{i} Items ${total}</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
-    );
+      billItems.find((billItem) => billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase()) ? (
+        <MenuItem item={ billItems.find((billItem) => billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase())} />
+    ) : (
+        <InitialMenuItem item={item} />
+
+    )
+);
+
+       
+       
+    
+  }
+    
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.categoriesContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
+        >
+          {categories.map(renderCategory)}
+        </ScrollView>
+      </View>
+      <FlatList
+        data={items}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.name}
+        style={styles.itemsContainer}
+      />
+      <CheckOutButton />
+    </SafeAreaView>
+  );
 };
 
 export default Menu;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F5F5',
-    },
-    categoriesContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: 10,
+  itemsContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+  },
+  categoriesContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
 
-        backgroundColor: '#fff',
-    },
-    categoryButton: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        marginHorizontal: 5,
-        borderRadius: 15,
-        height: 70,
-        justifyContent: 'center',
-        backgroundColor: '#eee',
-    },
-    categoryButtonSelected: {
-        backgroundColor: '#e3d1f9',
-        borderColor: '#5e48a6',
-        borderWidth: 1,
-    },
-    categoryButtonText: {
-        fontSize: 16,
-        color: '#5e48a6',
-    },
-    itemsContainer: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    item: {
-        flexDirection: 'row',
-        padding: 15,
-        borderBottomWidth: 1,
-        borderColor: '#eee',
-        alignItems: 'center',
-    },
-    itemImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 10,
-    },
-    itemDetails: {
-        flex: 1,
-        marginLeft: 15,
-    },
-    itemName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    itemPrice: {
-        fontSize: 14,
-        color: '#555',
-        marginTop: 5,
-    },
-    itemQuantity: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    quantityButton: {
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#eee',
-        borderRadius: 5,
-    },
-    quantityText: {
-        fontSize: 16,
-        marginHorizontal: 10,
-    },
-    orderButton: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 15,
-        backgroundColor: '#5e48a6',
-        borderRadius: 30,
-        margin: 20,
-    },
-    orderButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+    backgroundColor: "#fff",
+  },
+  categoryButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 5,
+    borderRadius: 15,
+    height: 70,
+    justifyContent: "center",
+    backgroundColor: "#eee",
+  },
+  categoryButtonSelected: {
+    backgroundColor: "#e3d1f9",
+    borderColor: "#5e48a6",
+    borderWidth: 1,
+  },
+  categoryButtonText: {
+    fontSize: 16,
+    color: "#5e48a6",
+  },
 });

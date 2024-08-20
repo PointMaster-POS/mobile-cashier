@@ -13,24 +13,35 @@ const BillItems = [
     qr: "123456789",
     name: "Coca Cola",
     category: "Soft Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
     price: 2.5,
   },
   {
     qr: "987654321",
     name: "Fanta",
     category: "Soft Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+
     price: 2.5,
   },
   {
     qr: "123123123",
     name: "Sprite",
     category: "Hot Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+
     price: 2.5,
   },
   {
     qr: "321321321",
     name: "Pepsi",
     category: "Soft Drink",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
+
     price: 2.5,
   },
 ];
@@ -41,15 +52,17 @@ export const BillProvider = ({ children }) => {
   const [i, setI] = useState(0);
   const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    setBillItems(BillItems);
+
+  useEffect(() => { 
     setCategories(categoriesAll);
   }, []);
+
+  
 
   const addProductToBill = (item) => {
     const qrCode = item?.qr?.trim().toLowerCase();
     if (!qrCode) return;
-
+    //check if the item already exists in the bill
     const existingItem = billItems.find(
       (billItem) => billItem.qr.trim().toLowerCase() === qrCode
     );
@@ -76,10 +89,16 @@ export const BillProvider = ({ children }) => {
   const increaseQuantity = (qr) => {
     const qrCode = qr?.trim().toLowerCase();
     if (!qrCode) return;
+    
 
     const updatedItems = billItems.map((billItem) => {
       if (billItem.qr.trim().toLowerCase() === qrCode) {
-        return { ...billItem, quantity: billItem.quantity + 1 };
+        if (billItem.quantity ) {
+          return { ...billItem, quantity: billItem.quantity + 1 };
+        } else {
+          return { ...billItem, quantity: 1 };
+        }
+
       }
       return billItem;
     });
@@ -97,7 +116,12 @@ export const BillProvider = ({ children }) => {
 
     const updatedItems = billItems.map((billItem) => {
       if (billItem.qr.trim().toLowerCase() === qrCode) {
+        if (billItem.quantity === 1) {
+          return billItem;
+        } else {
+
         return { ...billItem, quantity: Math.max(billItem.quantity - 1, 1) };
+        }
       }
       return billItem;
     });
@@ -105,7 +129,7 @@ export const BillProvider = ({ children }) => {
     setI(i - 1);
     //calculate total and set
     setTotal(
-      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity?item.quantity: 0 , 0)
     );
     console.log("total" + total);
   };

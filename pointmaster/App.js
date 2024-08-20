@@ -2,7 +2,7 @@ import React from "react";
 import { Button, TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { BillProvider } from "./context/BillContext"; 
+import { BillProvider } from "./context/billcontext"; 
 import Checkout from "./app/(tabs)/checkout";
 import Menu from "./app/(tabs)/menu";
 import Main from "./app/(tabs)/main";
