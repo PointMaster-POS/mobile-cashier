@@ -19,7 +19,7 @@ const Checkout = () => {
     const navigation = useNavigation();
   const [isRedeem, setIsRedeem] = useState(false);
 
-  const { billItems, total, cancelBill } = useContext(BillContext);
+  const { billItems, total, cancelBill, increaseQuantity, decreaseQuantity } = useContext(BillContext);
   const items = [
     {
       name: "Cappuccino",
@@ -70,11 +70,11 @@ const Checkout = () => {
         <Text style={styles.itemPrice}>${item.price}</Text>
       </View>
       <View style={styles.itemQuantity}>
-        <TouchableOpacity style={styles.quantityButton}>
+        <TouchableOpacity style={styles.quantityButton} onPress={() => decreaseQuantity(item.qr.trim().toLowerCase())}>
           <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
         <Text style={styles.quantityText}>{item.quantity}</Text>
-        <TouchableOpacity style={styles.quantityButton}>
+        <TouchableOpacity style={styles.quantityButton} onPress={() => increaseQuantity(item.qr.trim().toLowerCase())}>
           <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
