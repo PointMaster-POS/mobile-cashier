@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   billValue: {
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: "bold",
   },
   buttonContainer: {

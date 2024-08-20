@@ -40,7 +40,19 @@ export default function App() {
             }}
           />
          
-          <Stack.Screen name="Checkout" component={Checkout} />
+          <Stack.Screen 
+            name="Checkout" 
+            component={Checkout} 
+            options={{
+              title: "CHECKOUT",
+              headerRight: () => (
+                <Button 
+                  title="Hold Bill" 
+                  onPress={() => alert("New Order")}
+                />
+              ),
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </BillProvider>
