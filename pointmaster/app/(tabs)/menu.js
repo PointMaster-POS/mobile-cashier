@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import CheckOutButton from "../components/checkout-button";
 import MenuItem from "../components/menu-item";
 import InitialMenuItem from "../components/initialmenuitem";
+import { AntDesign } from "react-native-vector-icons";
 
 //nedd to fetach all the items related to selected category
 const MenuItems = [
@@ -52,6 +53,7 @@ const MenuItems = [
 
     price: 2.5,
   },
+  
 ];
 
 const Menu = () => {
@@ -95,12 +97,14 @@ const Menu = () => {
   const renderItem = ({ item }) => {
    
     return (
+    selectedCategory === item.category && (
       billItems.find((billItem) => billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase()) ? (
         <MenuItem item={ billItems.find((billItem) => billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase())} />
     ) : (
         <InitialMenuItem item={item} />
 
     )
+    ) 
 );
 
        

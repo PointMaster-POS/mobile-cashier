@@ -1,4 +1,4 @@
-import React,{useContext} from "react";
+import React, { useContext, useState } from "react";
 import {
   Text,
   View,
@@ -14,8 +14,9 @@ import CheckOutCustomer from "../components/checkout-customer";
 import { BillContext } from "../../context/billcontext";
 
 const Checkout = () => {
+  const [isRedeem, setIsRedeem] = useState(false);
 
-const {billItems} = useContext(BillContext);
+  const { billItems, total } = useContext(BillContext);
   const items = [
     {
       name: "Cappuccino",
@@ -32,7 +33,6 @@ const {billItems} = useContext(BillContext);
         "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr",
     },
   ];
-  
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
@@ -43,11 +43,11 @@ const {billItems} = useContext(BillContext);
       </View>
       <View style={styles.itemQuantity}>
         <TouchableOpacity style={styles.quantityButton}>
-          <AntDesign name="minuscircleo" size={16} color="#555" />
+          <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
         <Text style={styles.quantityText}>{item.quantity}</Text>
         <TouchableOpacity style={styles.quantityButton}>
-          <AntDesign name="pluscircleo" size={16} color="#555" />
+          <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
     </View>
@@ -62,18 +62,32 @@ const {billItems} = useContext(BillContext);
         keyExtractor={(item) => item.name}
         style={styles.itemsContainer}
       />
+      <TouchableOpacity onPress={() => setIsRedeem(!isRedeem)}>
+        <View
+          style={[
+            styles.redeemLoyalityPoints,
+            isRedeem && { backgroundColor: "#e3d1f9" },
+          ]}
+        >
+          <Text
+            style={[
+              styles.redeemLoyalityPointsText,
+              isRedeem ? { color: "#5e48a6" } : { color: "#ccc" },
+            ]}
+          >
+            Redeem Loyality Points
+          </Text>
+          <FontAwesome
+            name="gift"
+            size={24}
+            color={isRedeem ? "#5e48a6" : "#ccc"}
+          />
+        </View>
+      </TouchableOpacity>
       <View style={styles.billDetailsContainer}>
         <View style={styles.billRow}>
-          <Text style={styles.billLabel}>Subtotal</Text>
-          <Text style={styles.billValue}>$28</Text>
-        </View>
-        <View style={styles.billRow}>
-          <Text style={styles.billLabel}>Tax</Text>
-          <Text style={styles.billValue}>$1.50</Text>
-        </View>
-        <View style={styles.billRow}>
           <Text style={styles.billLabel}>Total</Text>
-          <Text style={styles.billValue}>$29.50</Text>
+          <Text style={styles.billValue}>${total}</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -97,6 +111,16 @@ const {billItems} = useContext(BillContext);
 export default Checkout;
 
 const styles = StyleSheet.create({
+  redeemLoyalityPoints: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 20,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+  },
+  redeemLoyalityPointsText: {
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
@@ -125,7 +149,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 15,
     borderWidth: 1,
-    borderColor: "purple",
+    borderColor: "#5e48a6",
     alignItems: "center",
     borderRadius: 15,
     width: "95%",
@@ -144,10 +168,11 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#5e48a6",
   },
   itemPrice: {
     fontSize: 14,
-    color: "#555",
+    color: "#5e48a6",
     marginTop: 5,
   },
   itemQuantity: {
@@ -156,14 +181,14 @@ const styles = StyleSheet.create({
   },
 
   quantityText: {
-    fontSize: 16,
+    fontSize: 20,
     marginHorizontal: 10,
   },
   billDetailsContainer: {
     padding: 20,
     backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#5e48a6",
   },
   billRow: {
     flexDirection: "row",
@@ -182,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#5e48a6",
     height: 100,
     padding: 5,
   },
@@ -196,7 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: "purple",
   },
   proceedButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#5e48a6",
   },
   buttonText: {
     color: "#fff",
