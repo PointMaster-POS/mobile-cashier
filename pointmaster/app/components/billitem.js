@@ -37,14 +37,14 @@ const BillItem = ({ item, increaseQuantity, decreaseQuantity }) => {
                 <AntDesign
                     name="minuscircleo"
                     size={24}
-                    color={getColor("primary")}
+                    color="#5e48a6"
                     onPress={handleMinus}
                 />
                 <Text style={styles.quantityText}>{quantity}</Text>
                 <AntDesign
                     name="pluscircleo"
                     size={24}
-                    color={getColor("primary")}
+                    color="#5e48a6"
                     onPress={handleAdd}
                 />
             </View>
@@ -59,10 +59,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         padding: 10,
         borderWidth: 1,
-        borderColor: getColor("primary"),
-        backgroundColor: getColor("light"),
+        borderColor:"#5e48a6",
+        backgroundColor: "#e3d1f9",
         borderRadius: 10,
-        marginVertical: 10,
+        margin: 10,
     },
     imageDetailContainer: {
         flexDirection: "row",

@@ -7,7 +7,7 @@ const Menu = () => {
     const navigation = useNavigation();
     //get state from bill context
    
-    const { billItems, increaseQuantity, decreaseQuantity,categories, i } = useContext(BillContext); 
+    const { billItems, increaseQuantity, decreaseQuantity,categories, i, total } = useContext(BillContext); 
     const [selectedCategory, setSelectedCategory] = useState('Favorite');
 
 
@@ -30,6 +30,7 @@ const Menu = () => {
             <Text style={styles.categoryButtonText}>{category}</Text>
         </TouchableOpacity>
     );
+
 
     //render category items to the screen
 
@@ -70,7 +71,7 @@ const Menu = () => {
             />
             <TouchableOpacity style={styles.orderButton} onPress = {handledAsyncNavigation}>
                 <Text style={styles.orderButtonText}>Proceed New Order</Text>
-                <Text style={styles.orderButtonText}>{i} Items ${billItems.reduce((total, item) => total + item.price * item.quantity, 0)}</Text>
+                <Text style={styles.orderButtonText}>{i} Items ${total}</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );
@@ -87,12 +88,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         paddingVertical: 10,
+
         backgroundColor: '#fff',
     },
     categoryButton: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 20,
+        marginHorizontal: 5,
+        borderRadius: 15,
+        height: 70,
+        justifyContent: 'center',
         backgroundColor: '#eee',
     },
     categoryButtonSelected: {
