@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import { BillContext } from '../../context/billcontext';
+import { AntDesign } from 'react-native-vector-icons';
 
 export default function BarcodeScanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-
+  const { addProductToBill } = useContext(BillContext);
+  
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -29,8 +32,18 @@ export default function BarcodeScanner() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    addProductToBill(data);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+
+    // Here you should transform the scanned data into the appropriate item object.
+    // Example:
+    const item = {
+      qr: data, // Assuming 'data' is the QR code or barcode scanned
+      name: 'Scanned Item', // This should be fetched from a database or pre-defined list
+      price: 2.5, // The price should also be fetched accordingly
+      quantity: 1
+    };
+
+    addProductToBill(item);  // Pass the item object to the context function
+    console.log(data);
   };
 
   if (hasPermission === null) {
@@ -44,9 +57,14 @@ export default function BarcodeScanner() {
     <View style={styles.container}>
       {scanned ? (
         <View style={styles.buttonContainer}>
-          <Button title={"Add another item"} onPress={handleAddItem} />
-          <Button title={"Cancel"} onPress={handleCancel} />
-          <Button title={"Proceed"} onPress={handleProceed} />
+          
+          <TouchableOpacity style={[styles.buttonContainer]} onPress={handleAddItem}>
+
+            <Text style={styles.buttonText}>Add More</Text>
+            <AntDesign name= "pluscircle" size={24} color="#e3d1f9" />
+
+          </TouchableOpacity>
+         
         </View>
       ) : (
         <View style={styles.barcodeContainer}>
@@ -66,12 +84,22 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-
   },
   buttonContainer: {
-    flex: 1,
-    justifyContent: "center",
-   
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: "100%",
+    width: "90%",
+    borderRadius: 10,
+    margin: 10,
+    backgroundColor: "#5e48a6",
+    paddingHorizontal: 40,
+
+    
+  
+    
   },
   barcodeContainer: {
     width: "90%",
@@ -79,11 +107,16 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     justifyContent: "center",
     borderRadius: 10,
-    marginTop : 10,
-    
+    marginTop: 10,
   },
   barcodeScanner: {
     width: "100%",
     height: "100%",
+  },
+  buttonText: {
+    color: "#e3d1f9",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
