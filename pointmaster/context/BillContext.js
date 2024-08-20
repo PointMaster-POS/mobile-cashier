@@ -89,7 +89,7 @@ export const BillProvider = ({ children }) => {
   const increaseQuantity = (qr) => {
     const qrCode = qr?.trim().toLowerCase();
     if (!qrCode) return;
-    
+
 
     const updatedItems = billItems.map((billItem) => {
       if (billItem.qr.trim().toLowerCase() === qrCode) {
@@ -134,6 +134,11 @@ export const BillProvider = ({ children }) => {
     console.log("total" + total);
   };
 
+  const cancelBill = () => {
+    setBillItems([]);
+    setTotal(0);
+  };
+
   return (
     <BillContext.Provider
       value={{
@@ -143,7 +148,9 @@ export const BillProvider = ({ children }) => {
         addProductToBill,
         increaseQuantity,
         decreaseQuantity,
+        cancelBill,
         i,
+
       }}
     >
       {children}

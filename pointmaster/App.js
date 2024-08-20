@@ -7,16 +7,23 @@ import Checkout from "./app/(tabs)/checkout";
 import Menu from "./app/(tabs)/menu";
 import Main from "./app/(tabs)/main";
 import { AntDesign } from "react-native-vector-icons";
-
+import FlashMessage from "react-native-flash-message";
 const Stack = createNativeStackNavigator();
-
+import { showMessage } from "react-native-flash-message";
 export default function App() {
   const [isScanMode, setIsScanMode] = React.useState(false);
 
   //button to toggle between scan and menu
   const toggleScanMode = () => {
     setIsScanMode(!isScanMode);
-    alert(`Scan mode ${!isScanMode ? 'enabled' : 'disabled'}`);
+    showMessage({
+      message: isScanMode ? "You are now in MENU mode" : "You are now in SCAN mode",
+      type: "info",
+      color: "#fff",
+      backgroundColor: "#5e48a6",
+      icon: "info",
+      duration: 3000,
+    });
   };
 
 
@@ -48,13 +55,23 @@ export default function App() {
               headerRight: () => (
                 <Button 
                   title="Hold Bill" 
-                  onPress={() => alert("New Order")}
+                  onPress={() => showMessage({
+                    message: "Showing all hold bills within 2 hours",
+                    type: "info",
+                    color: "#fff",
+                    backgroundColor: "#5e48a6",
+                    icon: "info",
+                    duration: 3000,
+                  })}
                 />
               ),
             }}
           />
+           
         </Stack.Navigator>
+       
       </NavigationContainer>
+      <FlashMessage position="top" />
     </BillProvider>
   );
 }

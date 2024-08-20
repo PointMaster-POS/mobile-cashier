@@ -8,15 +8,18 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Pressable,
 } from "react-native";
 import { FontAwesome, AntDesign } from "react-native-vector-icons";
 import CheckOutCustomer from "../components/checkout-customer";
 import { BillContext } from "../../context/billcontext";
-
+import { showMessage, hideMessage } from "react-native-flash-message";
+import { useNavigation } from "@react-navigation/native";
 const Checkout = () => {
+    const navigation = useNavigation();
   const [isRedeem, setIsRedeem] = useState(false);
 
-  const { billItems, total } = useContext(BillContext);
+  const { billItems, total, cancelBill } = useContext(BillContext);
   const items = [
     {
       name: "Cappuccino",
@@ -33,6 +36,31 @@ const Checkout = () => {
         "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr",
     },
   ];
+
+  const pressCancel = () => {
+    showMessage({
+      message: "Press and hold to cancel",
+      type: "info",
+      color: "#fff",
+      backgroundColor: "#5e48a6",
+      icon: "info",
+      duration: 3000,
+    });
+  };
+
+  const handledCancel = () => {
+    cancelBill();
+    //return back in the stack
+    navigation.goBack();
+    showMessage({
+        message: "Bill Cancelled",
+        type: "success",
+        color: "#fff",
+        backgroundColor: "#5e48a6",
+        icon: "success",
+        duration: 3000,
+        });
+    };
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
@@ -97,12 +125,13 @@ const Checkout = () => {
         >
           <Text style={styles.buttonText}>Proceed</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        <Pressable
           style={[styles.button, styles.cancelButton]}
-          onPress={() => alert("Cancel button pressed")}
+          onLongPress={handledCancel}
+          onPress={pressCancel}
         >
           <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -125,16 +154,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F5F5",
   },
-  // customerContainer: {
-  //     padding: 20,
-  //     backgroundColor: '#fff',
-  //     borderBottomWidth: 1,
-  //     borderColor: '#eee',
-  // },
-  // customerText: {
-  //     fontSize: 18,
-  //     fontWeight: 'bold',
-  // },
+  
   tableText: {
     fontSize: 16,
     color: "#555",
