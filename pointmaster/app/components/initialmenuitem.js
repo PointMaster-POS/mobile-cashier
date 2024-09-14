@@ -13,8 +13,8 @@ const InitialMenuItem = ({ item }) => {
         >
         <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
         <View style={styles.itemDetails}>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemPrice}>${item.price}</Text>
+            <Text style={styles.itemName}>{item.item_name}</Text>
+            <Text style={styles.itemPrice}>${item.discount}</Text>
         </View>
         </TouchableOpacity>
     );

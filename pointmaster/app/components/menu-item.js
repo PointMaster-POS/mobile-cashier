@@ -6,6 +6,7 @@ import { BillContext } from "../../context/billcontext";
 
 const MenuItem = ({ item }) => {
     const { increaseQuantity, decreaseQuantity, i } = useContext(BillContext);
+
     
    // console.log("item" + item);
    console.log("wu" + item.quantity);
@@ -14,13 +15,13 @@ const MenuItem = ({ item }) => {
     <View style={styles.item}>
       <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
+        <Text style={styles.itemName}>{item.item_name}</Text>
+        <Text style={styles.itemPrice}>${item.discount}</Text>
       </View>
       <View style={styles.itemQuantity}>
         <TouchableOpacity
           style={styles.quantityButton}
-          onPress={() => decreaseQuantity(item.qr.trim().toLowerCase())}
+          onPress={() => decreaseQuantity(item.barcode.trim().toLowerCase())}
         >
         <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
           
@@ -32,7 +33,7 @@ const MenuItem = ({ item }) => {
       <View style={styles.itemQuantity}>
         <TouchableOpacity
           style={styles.quantityButton}
-          onPress={() => increaseQuantity(item.qr.trim().toLowerCase())}
+          onPress={() => increaseQuantity(item.barcode.trim().toLowerCase())}
         >
             <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
