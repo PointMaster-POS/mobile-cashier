@@ -3,16 +3,18 @@ import { SafeAreaView, StyleSheet, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
-import { UserContext } from "../context/userContext";
+// import { UserContext } from "../context/userContext";
 import AsyncStorage  from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
-
+import { UserContext } from "../../context/usercontext";
 import axios from "axios";
 
 const LoginScreen = () => {
-  const { setIsLogged} = useContext(UserContext);
+ const { setIsLoggedIn} = useContext(UserContext);
+
 
   const navigation = useNavigation();
+
 
   //states to handle user input
   const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://localhost:3002/customer/login", {
+      const response = await axios.post("http://localhost:3002/employee/login", {
         email,
         password,
       });
@@ -40,9 +42,9 @@ const LoginScreen = () => {
           duration: 3000,
         });
       } else {
-        setIsLogged(true);
-        navigation.navigate("Home", { user: response.data });
-        await AsyncStorage.setItem("accessToken", response.data.accessToken.toString());
+        setIsLoggedIn(true);
+        // navigation.navigate("Home", { user: response.data });
+        await AsyncStorage.setItem("accessToken", response.data.toString());
         console.log(await AsyncStorage.getItem("accessToken"));
       }
     } catch (error) { 
@@ -84,17 +86,7 @@ const LoginScreen = () => {
         buttonStyle={styles.loginButton}
       />
 
-      <Text style={styles.registerText}>
-        Don't have an account?{" "}
-        <Text
-          style={styles.registerLinkText}
-          onPress={_handlePressButtonAsync}
-        >
-
-          Register
-
-        </Text>
-      </Text>
+    
     </SafeAreaView>
   );
 };
