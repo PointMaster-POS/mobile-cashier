@@ -2,12 +2,13 @@ import React from "react";
 import { Button, TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { BillProvider } from "./context/billcontext"; 
+import { BillProvider } from "./context/billcontext";
 import Checkout from "./app/(tabs)/checkout";
 import Menu from "./app/(tabs)/menu";
 import Main from "./app/(tabs)/main";
 import { AntDesign } from "react-native-vector-icons";
 import FlashMessage from "react-native-flash-message";
+import LoginScreen from "./app/(tabs)/login";
 const Stack = createNativeStackNavigator();
 import { showMessage } from "react-native-flash-message";
 export default function App() {
