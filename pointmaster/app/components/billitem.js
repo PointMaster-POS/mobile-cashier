@@ -9,12 +9,12 @@ const BillItem = ({ item}) => {
     const { increaseQuantity, decreaseQuantity } = useContext(BillContext);
 
   const handleAdd = () => {
-    increaseQuantity(item.qr.trim().toLowerCase());
+    increaseQuantity(item.barcode.trim().toLowerCase());
   };
 
   const handleMinus = () => {
     if (quantity > 1) {
-      decreaseQuantity(item.qr.trim().toLowerCase());
+      decreaseQuantity(item.barcode.trim().toLowerCase());
     }
   };
 
@@ -26,14 +26,14 @@ const BillItem = ({ item}) => {
     <View style={styles.itemContainer}>
       <View style={styles.imageDetailContainer}>
         <Image
-          source={{ uri: item.imageUrl }}
+          source={{ uri: item.image_url }}
           style={styles.itemImage}
           resizeMode="cover"
         />
         <View style={styles.detailContainer}>
-          <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemPrice}>Rs. {item.price * quantity}</Text>
-          <Text style={styles.itemPerPrice}>Rs. {item.price}/item</Text>
+          <Text style={styles.itemName}>{item.item_name}</Text>
+          <Text style={styles.itemPrice}>Rs. {item.discount * quantity}</Text>
+          <Text style={styles.itemPerPrice}>Rs. {item.discount}/item</Text>
         </View>
       </View>
       <View style={styles.quantityContainer}>

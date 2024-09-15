@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { BillContext } from "../../context/billcontext";   
 
 const CheckOutCustomer = () => {
-    const { billItems } = useContext(BillContext);
+    const { billItems, customer , setCustomer } = useContext(BillContext);
 
     
   return (

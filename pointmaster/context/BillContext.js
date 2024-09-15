@@ -19,6 +19,9 @@ export const BillProvider = ({ children }) => {
   const [billItems, setBillItems] = useState([]);
   const [i, setI] = useState(0);
   const [total, setTotal] = useState(0);
+  const [customer, setCustomer] = useState(null);
+
+  
 
   
 
@@ -115,6 +118,8 @@ export const BillProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         cancelBill,
+        customer,
+        setCustomer,
         i,
 
       }}

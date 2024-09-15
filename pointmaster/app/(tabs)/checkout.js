@@ -64,17 +64,17 @@ const Checkout = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+      <Image source={{ uri: item.image_url }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
+        <Text style={styles.itemName}>{item.item_name}</Text>
+        <Text style={styles.itemPrice}>${item.discount}</Text>
       </View>
       <View style={styles.itemQuantity}>
-        <TouchableOpacity style={styles.quantityButton} onPress={() => decreaseQuantity(item.qr.trim().toLowerCase())}>
+        <TouchableOpacity style={styles.quantityButton} onPress={() => decreaseQuantity(item.barcode.trim().toLowerCase())}>
           <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
         <Text style={styles.quantityText}>{item.quantity}</Text>
-        <TouchableOpacity style={styles.quantityButton} onPress={() => increaseQuantity(item.qr.trim().toLowerCase())}>
+        <TouchableOpacity style={styles.quantityButton} onPress={() => increaseQuantity(item.barcode.trim().toLowerCase())}>
           <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
@@ -87,7 +87,7 @@ const Checkout = () => {
       <FlatList
         data={billItems}
         renderItem={renderItem}
-        keyExtractor={(item) => item.name}
+        keyExtractor={(item) => item.item_id}
         style={styles.itemsContainer}
       />
       <TouchableOpacity onPress={() => setIsRedeem(!isRedeem)}>
