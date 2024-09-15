@@ -11,21 +11,12 @@ const categoriesAll = [
   "Alcohol",
 ];
 
-
-
-
 export const BillProvider = ({ children }) => {
   const [categories, setCategories] = useState(null);
   const [billItems, setBillItems] = useState([]);
   const [i, setI] = useState(0);
   const [total, setTotal] = useState(0);
   const [customer, setCustomer] = useState(null);
-
-  
-
-  
-
-  
 
   const addProductToBill = (item) => {
     const qrCode = item?.barcode?.trim().toLowerCase();
@@ -103,6 +94,7 @@ export const BillProvider = ({ children }) => {
   };
 
   const cancelBill = () => {
+    setCustomer(null);
     setBillItems([]);
     setTotal(0);
   };
