@@ -4,38 +4,38 @@ import {
   View,
   SafeAreaView,
   StyleSheet,
-  Button,
   TouchableOpacity,
   FlatList,
   Image,
   Pressable,
+  Modal,
 } from "react-native";
 import { FontAwesome, AntDesign } from "react-native-vector-icons";
 import CheckOutCustomer from "../components/checkout-customer";
 import { BillContext } from "../../context/billcontext";
-import { showMessage, hideMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import { useNavigation } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
+
 const Checkout = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   const [isRedeem, setIsRedeem] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [isPaymentMethodSelected, setIsPaymentMethodSelected] = useState(false);
+
 
   const { billItems, total, cancelBill, increaseQuantity, decreaseQuantity } = useContext(BillContext);
-  const items = [
-    {
-      name: "Cappuccino",
-      price: 8,
-      quantity: 1,
-      imageUrl:
-        "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr",
-    },
-    {
-      name: "Matcha Latte",
-      price: 10,
-      quantity: 2,
-      imageUrl:
-        "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcTuDKXbkn3GeIZJJOodadOiGxwsCP6KWCRAvtBCf_eFNowUrFmuaNz7j5UrV7K7nHgr",
-    },
-  ];
+
+
+  // need to send backend when the bill is paid
+  // customer phone number
+  // payment method
+  // total amount
+  // items list in the bill
+  // loyality points redeemed or not
+  // loyality points redeemed amount
+
 
   const pressCancel = () => {
     showMessage({
@@ -50,17 +50,33 @@ const Checkout = () => {
 
   const handledCancel = () => {
     cancelBill();
-    //return back in the stack
     navigation.goBack();
     showMessage({
-        message: "Bill Cancelled",
-        type: "success",
+      message: "Bill Cancelled",
+      type: "success",
+      color: "#fff",
+      backgroundColor: "#5e48a6",
+      icon: "success",
+      duration: 3000,
+    });
+  };
+
+  const handledProceed = () => {
+    if (billItems.length === 0) {
+      showMessage({
+        message: "No items in the bill",
+        type: "danger",
         color: "#fff",
         backgroundColor: "#5e48a6",
-        icon: "success",
+        icon: "danger",
         duration: 3000,
-        });
-    };
+      });
+    } else {
+      setIsModalVisible(true);
+    }
+  };
+
+
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
@@ -80,6 +96,15 @@ const Checkout = () => {
       </View>
     </View>
   );
+
+  const handleSliderChange = (value) => {
+    setSliderValue(value);
+    if (value < 0.5) {
+      setPaymentMethod("cash");
+    } else {
+      setPaymentMethod("card");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,7 +128,7 @@ const Checkout = () => {
               isRedeem ? { color: "#5e48a6" } : { color: "#ccc" },
             ]}
           >
-            Redeem Loyality Points
+            Redeem Loyalty Points
           </Text>
           <FontAwesome
             name="gift"
@@ -121,7 +146,7 @@ const Checkout = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, styles.proceedButton]}
-          onPress={() => alert("Proceed button pressed")}
+          onPress={handledProceed} 
         >
           <Text style={styles.buttonText}>Proceed</Text>
         </TouchableOpacity>
@@ -133,32 +158,106 @@ const Checkout = () => {
           <Text style={styles.buttonText}>Cancel</Text>
         </Pressable>
       </View>
+
+      {/* Modal for Payment Method */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          { isPaymentMethodSelected ? (
+         
+            <View style = {styles.modalContent}>
+              <Text style={styles.modalTitle}>Bill Summary</Text>
+              <View style={styles.billDetailsContainer}>
+                <View style={styles.billRow}>
+                  <Text style={styles.billLabel}>Total</Text>
+                  <Text >${total}</Text>
+                </View>
+                <View style={styles.billRow}>
+                  <Text style={styles.billLabel}>Payment Method</Text>
+                  <Text >{paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"}</Text>
+                </View>
+                <View style={styles.billRow}>
+                 {isRedeem && <Text style={styles.billLabel}> Loyalty Points Redeemed</Text> }
+                </View>
+                
+              </View>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setIsModalVisible(false);
+                  showMessage({
+                    message: "Bill Paid",
+                    type: "success",
+                    color: "#fff",
+                    backgroundColor: "#5e48a6",
+                    icon: "success",
+                    duration: 3000,
+                  });
+                  navigation.goBack();
+                }}
+              >
+                <Text style={styles.modalButtonText}>Pay</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setIsModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Payment Method</Text>
+            <Picker
+              selectedValue={paymentMethod}
+              onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Cash" value="cash" />
+              <Picker.Item label="Debit/Credit Card" value="card" />
+            </Picker>
+            <Text style={styles.sliderLabel}>
+              Slide to select payment method
+            </Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setIsPaymentMethodSelected(true);
+                showMessage({
+                  message: `Payment Method Selected: ${paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"}`,
+                  type: "success",
+                  color: "#fff",
+                  backgroundColor: "#5e48a6",
+                  icon: "success",
+                  duration: 3000,
+                });
+              }}
+            >
+              <Text style={styles.modalButtonText}> {isPaymentMethodSelected ?"confim" : (paymentMethod === "cash" ? "Cash" : "Debit/Credit Card")}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setIsModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+          )}
+        </View>
+
+      </Modal>
     </SafeAreaView>
   );
 };
 
-export default Checkout;
-
 const styles = StyleSheet.create({
-  redeemLoyalityPoints: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 20,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-  },
-  redeemLoyalityPointsText: {
-    fontSize: 16,
-  },
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
-  },
-  
-  tableText: {
-    fontSize: 16,
-    color: "#555",
-    marginTop: 5,
   },
   itemsContainer: {
     flex: 1,
@@ -199,7 +298,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-
+  quantityButton: {
+    padding: 5,
+  },
   quantityText: {
     fontSize: 20,
     marginHorizontal: 10,
@@ -237,15 +338,69 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     margin: 5,
   },
-  cancelButton: {
-    backgroundColor: "purple",
-  },
   proceedButton: {
     backgroundColor: "#5e48a6",
+  },
+  cancelButton: {
+    backgroundColor: "purple",
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
+  redeemLoyalityPoints: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 20,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+  },
+  redeemLoyalityPointsText: {
+    fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  slider: {
+    width: "100%",
+    height: 40,
+  },
+  sliderLabel: {
+    fontSize: 18,
+    marginVertical: 20,
+  },
+  modalButton: {
+    backgroundColor: "#5e48a6",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  picker: {
+    width: "100%",
+  },
 });
+
+export default Checkout;

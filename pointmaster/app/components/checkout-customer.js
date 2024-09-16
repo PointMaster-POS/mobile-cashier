@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from "react-native";
 import { BillContext } from "../../context/billcontext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 
 const CheckOutCustomer = () => {
@@ -10,10 +11,12 @@ const CheckOutCustomer = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
 
     const handleOpenAddCustomerModel = () => {
-        setIsModalVisible(true); // Open the modal
+        setIsModalVisible(true); 
     };
 
-    const handleSaveCustomer = async() => {
+    /
+
+    const handleSaveCustomer = async () => {
         //fetch customer details from the server
         const accessToken = await AsyncStorage.getItem('accessToken');
 
@@ -28,10 +31,28 @@ const CheckOutCustomer = () => {
                 
             );
 
-        setIsModalVisible(false); // Close the modal
+        setIsModalVisible(false);
         setCustomer(response.data);
+        showMessage({
+            message: "Customer added successfully",
+            type: "success",
+            color: "#fff",
+            backgroundColor: "#5e48a6",
+            icon: "success",
+            duration: 3000,
+        }); 
+        
         } catch (error) {
             console.error("Error:", error.message);
+            setCustomer(null);
+            showMessage({
+                message: "customer not found",
+                type: "danger",
+                color: "#fff",
+                backgroundColor: "#5e48a6",
+                icon: "info",
+                duration: 3000,
+            }); 
         }
     };
 
@@ -99,16 +120,16 @@ const styles = StyleSheet.create({
     },
     addCustomerContainer: {
         padding: 20,
-        backgroundColor: "#fff",
+        backgroundColor: "#5e48a6",
         borderRadius: 10,
-        backgroundColor: "#f6d5f7",
+        backgroundColor: "#e3d1f9",
     },
     noCustomerContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 20,
-        backgroundColor: "#f6d5f7",
+        backgroundColor: "#e3d1f9",
         borderRadius: 10,
         margin: 10,
     },
