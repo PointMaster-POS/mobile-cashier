@@ -16,6 +16,7 @@ import { BillContext } from "../../context/billcontext";
 import { showMessage } from "react-native-flash-message";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
 
 const Checkout = () => {
   const navigation = useNavigation();
@@ -24,9 +25,12 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [isPaymentMethodSelected, setIsPaymentMethodSelected] = useState(false);
 
+  //check if the customer has enough points to redeem
+  const customerRedeemPoints = 100;
+ 
 
-  const { billItems, total, cancelBill, increaseQuantity, decreaseQuantity } = useContext(BillContext);
-
+  const { billItems, total, cancelBill, increaseQuantity, decreaseQuantity, customer} =
+    useContext(BillContext);
 
   // need to send backend when the bill is paid
   // customer phone number
@@ -34,8 +38,6 @@ const Checkout = () => {
   // total amount
   // items list in the bill
   // loyality points redeemed or not
-  // loyality points redeemed amount
-
 
   const pressCancel = () => {
     showMessage({
@@ -62,21 +64,39 @@ const Checkout = () => {
   };
 
   const handledProceed = () => {
-    if (billItems.length === 0) {
+    if (total > customerRedeemPoints) {
+      if (billItems.length === 0) {
+        showMessage({
+          message: "No items in the bill",
+          type: "danger",
+          color: "#fff",
+          backgroundColor: "#5e48a6",
+          icon: "danger",
+          duration: 3000,
+        });
+        //call api to send the bill details to the backend
+        const data = {
+          phoneNumber: "1234567890",
+          paymentMethod: "cash",
+          total: total,
+          items: billItems,
+          isRedeem: isRedeem,
+        };
+
+      } else {
+        setIsModalVisible(true);
+      }
+    } else {
       showMessage({
-        message: "No items in the bill",
+        message: "Customer does not have enough points to redeem",
         type: "danger",
         color: "#fff",
         backgroundColor: "#5e48a6",
         icon: "danger",
         duration: 3000,
       });
-    } else {
-      setIsModalVisible(true);
     }
   };
-
-
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
@@ -86,11 +106,17 @@ const Checkout = () => {
         <Text style={styles.itemPrice}>${item.discount}</Text>
       </View>
       <View style={styles.itemQuantity}>
-        <TouchableOpacity style={styles.quantityButton} onPress={() => decreaseQuantity(item.barcode.trim().toLowerCase())}>
+        <TouchableOpacity
+          style={styles.quantityButton}
+          onPress={() => decreaseQuantity(item.barcode.trim().toLowerCase())}
+        >
           <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
         <Text style={styles.quantityText}>{item.quantity}</Text>
-        <TouchableOpacity style={styles.quantityButton} onPress={() => increaseQuantity(item.barcode.trim().toLowerCase())}>
+        <TouchableOpacity
+          style={styles.quantityButton}
+          onPress={() => increaseQuantity(item.barcode.trim().toLowerCase())}
+        >
           <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
@@ -146,7 +172,7 @@ const Checkout = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, styles.proceedButton]}
-          onPress={handledProceed} 
+          onPress={handledProceed}
         >
           <Text style={styles.buttonText}>Proceed</Text>
         </TouchableOpacity>
@@ -167,23 +193,28 @@ const Checkout = () => {
         onRequestClose={() => setIsModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          { isPaymentMethodSelected ? (
-         
-            <View style = {styles.modalContent}>
+          {isPaymentMethodSelected ? (
+            <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Bill Summary</Text>
               <View style={styles.billDetailsContainer}>
                 <View style={styles.billRow}>
                   <Text style={styles.billLabel}>Total</Text>
-                  <Text >${total}</Text>
+                  <Text>${total}</Text>
                 </View>
                 <View style={styles.billRow}>
                   <Text style={styles.billLabel}>Payment Method</Text>
-                  <Text >{paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"}</Text>
+                  <Text>
+                    {paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"}
+                  </Text>
                 </View>
                 <View style={styles.billRow}>
-                 {isRedeem && <Text style={styles.billLabel}> Loyalty Points Redeemed</Text> }
+                  {isRedeem && (
+                    <Text style={styles.billLabel}>
+                      {" "}
+                      Loyalty Points Redeemed
+                    </Text>
+                  )}
                 </View>
-                
               </View>
               <TouchableOpacity
                 style={styles.modalButton}
@@ -210,45 +241,53 @@ const Checkout = () => {
               </TouchableOpacity>
             </View>
           ) : (
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Payment Method</Text>
-            <Picker
-              selectedValue={paymentMethod}
-              onValueChange={(itemValue) => setPaymentMethod(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="Cash" value="cash" />
-              <Picker.Item label="Debit/Credit Card" value="card" />
-            </Picker>
-            <Text style={styles.sliderLabel}>
-              Slide to select payment method
-            </Text>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => {
-                setIsPaymentMethodSelected(true);
-                showMessage({
-                  message: `Payment Method Selected: ${paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"}`,
-                  type: "success",
-                  color: "#fff",
-                  backgroundColor: "#5e48a6",
-                  icon: "success",
-                  duration: 3000,
-                });
-              }}
-            >
-              <Text style={styles.modalButtonText}> {isPaymentMethodSelected ?"confim" : (paymentMethod === "cash" ? "Cash" : "Debit/Credit Card")}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setIsModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Select Payment Method</Text>
+              <Picker
+                selectedValue={paymentMethod}
+                onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Cash" value="cash" />
+                <Picker.Item label="Debit/Credit Card" value="card" />
+              </Picker>
+              <Text style={styles.sliderLabel}>
+                Slide to select payment method
+              </Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setIsPaymentMethodSelected(true);
+                  showMessage({
+                    message: `Payment Method Selected: ${
+                      paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"
+                    }`,
+                    type: "success",
+                    color: "#fff",
+                    backgroundColor: "#5e48a6",
+                    icon: "success",
+                    duration: 3000,
+                  });
+                }}
+              >
+                <Text style={styles.modalButtonText}>
+                  {" "}
+                  {isPaymentMethodSelected
+                    ? "confim"
+                    : paymentMethod === "cash"
+                    ? "Cash"
+                    : "Debit/Credit Card"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setIsModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
-
       </Modal>
     </SafeAreaView>
   );

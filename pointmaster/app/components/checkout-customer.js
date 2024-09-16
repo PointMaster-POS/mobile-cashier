@@ -6,15 +6,13 @@ import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 
 const CheckOutCustomer = () => {
-    const { billItems, customer, setCustomer } = useContext(BillContext);
+    const { customer, setCustomer } = useContext(BillContext);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
 
     const handleOpenAddCustomerModel = () => {
         setIsModalVisible(true); 
     };
-
-    /
 
     const handleSaveCustomer = async () => {
         //fetch customer details from the server
