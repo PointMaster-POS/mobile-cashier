@@ -57,7 +57,6 @@ export const BillProvider = ({ children }) => {
         } else {
           return { ...billItem, quantity: 1 };
         }
-
       }
       return billItem;
     });

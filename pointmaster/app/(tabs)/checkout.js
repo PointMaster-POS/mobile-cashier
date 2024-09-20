@@ -26,18 +26,37 @@ const Checkout = () => {
   const [isPaymentMethodSelected, setIsPaymentMethodSelected] = useState(false);
 
   //check if the customer has enough points to redeem
-  const customerRedeemPoints = 100;
- 
+  const customerRedeemPoints = 1000;
 
-  const { billItems, total, cancelBill, increaseQuantity, decreaseQuantity, customer} =
-    useContext(BillContext);
+  //post request to send the bill details to the backend
+  const sendBillDetails = async (data) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3003/cashier/bill",
+        data
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  }
 
-  // need to send backend when the bill is paid
-  // customer phone number
-  // payment method
-  // total amount
-  // items list in the bill
-  // loyality points redeemed or not
+  const {
+    billItems,
+    total,
+    cancelBill,
+    increaseQuantity,
+    decreaseQuantity,
+    customer,
+  } = useContext(BillContext);
+
+  // need to send backend when the bill is paid ,  
+  // customer phone number , body
+  // payment method , body
+  // total amount , body
+  // items list in the bill , body
+  // loyality points redeemed or not , body
+  // asign the customer id to the bill
 
   const pressCancel = () => {
     showMessage({
@@ -74,15 +93,6 @@ const Checkout = () => {
           icon: "danger",
           duration: 3000,
         });
-        //call api to send the bill details to the backend
-        const data = {
-          phoneNumber: "1234567890",
-          paymentMethod: "cash",
-          total: total,
-          items: billItems,
-          isRedeem: isRedeem,
-        };
-
       } else {
         setIsModalVisible(true);
       }
