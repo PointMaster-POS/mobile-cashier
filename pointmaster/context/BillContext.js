@@ -92,10 +92,11 @@ export const BillProvider = ({ children }) => {
     console.log("total" + total);
   };
 
-  const cancelBill = () => {
+  const clearBill = () => {
     setCustomer(null);
     setBillItems([]);
     setTotal(0);
+    setI(0);
   };
 
   return (
@@ -108,7 +109,7 @@ export const BillProvider = ({ children }) => {
         addProductToBill,
         increaseQuantity,
         decreaseQuantity,
-        cancelBill,
+        clearBill,
         customer,
         setCustomer,
         i,

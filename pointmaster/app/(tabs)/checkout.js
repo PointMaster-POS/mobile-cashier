@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -16,6 +16,7 @@ import { BillContext } from "../../context/billcontext";
 import { showMessage } from "react-native-flash-message";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const Checkout = () => {
@@ -24,11 +25,11 @@ const Checkout = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [isPaymentMethodSelected, setIsPaymentMethodSelected] = useState(false);
-  const [customerEligibility , setCustomerEligibility] = useState('');
+  const [customerEligibility, setCustomerEligibility] = useState("");
   const {
     billItems,
     total,
-    cancelBill,
+    clearBill,
     increaseQuantity,
     decreaseQuantity,
     customer,
@@ -36,21 +37,114 @@ const Checkout = () => {
 
   //check if the customer has enough points to redeem
   const checkCustomerEligibility = async () => {
+    console.log(customer);
     const accessToken = await AsyncStorage.getItem("accessToken");
+    console.log(accessToken);
+    if (customer) {
+      try {
+        // Use POST instead of GET so you can send a body
+        const response = await axios.post(
+          `http://localhost:3003/cashier/loyalty/eligibility`,
+          { customer_id: customer.customer_id }, // The body with customer_id
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json", // Specify content type as JSON
+            },
+          }
+        );
+
+        console.log(response.data);
+
+        if (response.data.error) {
+          showMessage({
+            message: response.data.error,
+            type: "danger",
+            color: "#fff",
+            backgroundColor: "#5e48a6",
+            icon: "info",
+            duration: 3000,
+          });
+        } else {
+          setCustomerEligibility(response.data);
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+        showMessage({
+          message: "Error: " + error.message,
+          type: "danger",
+          color: "#fff",
+          backgroundColor: "#5e48a6",
+          icon: "info",
+          duration: 3000,
+        });
+      }
+    }
+    console.log(customerEligibility);
+  };
+
+  useEffect(() => {
+    if (customer) {
+      checkCustomerEligibility();
+    }
+  }, [customer]);
+
+  /*
+{
+  "payment_method": "credit_card",
+  "total_amount": 150.00,
+  "items_list": [
+    {
+      "item_id": "c2bc3f2c-763f-11ef-a031-0242ac120004",
+      "category_id": "a011507e-762b-11ef-8916-0242ac120004",
+      "price" : 1000,
+      "quantity" : 3
+    }
+  ],
+  "loyalty_points_redeemed": 0,
+  "discount" : 100,
+  "received" : 200,
+  "notes" : "good customer",
+  "customer_phone": "123456789",
+  "status" : 1
+}
+
+
+  */
+  //post request to send the bill details to the backend
+  const sendBillDetails = async () => {
+    const reducedItems = billItems.map((item) => {
+      return {
+        item_id: item.item_id,
+        category_id: item.category_id,
+        price: item.price,
+        quantity: item.quantity,
+      };
+    });
+    const data = {
+      payment_method: paymentMethod,
+      total_amount: total,
+      items_list: reducedItems,
+      loyalty_points_redeemed: isRedeem ? 1 : 0,
+      discount: 0,
+      received: total,
+      customer_phone: customer.customer_phone,
+      status: 1,
+    };
+
+    const token = await AsyncStorage.getItem("accessToken");
     try {
-      //in body we need to pass customer id
-      const response = await axios.get(
-        `http://localhost:3003/cashier/loyalty/eligibility`,
+      const response = await axios.post(
+        `http://localhost:3003/cashier/bill/new-bill`,
+        data,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-
-          body: {
-            customer_id: customer.customer_id,
-          }
-        });
-        
+        }
+      );
       if (response.data.error) {
         showMessage({
           message: response.data.error,
@@ -61,38 +155,25 @@ const Checkout = () => {
           duration: 3000,
         });
       }
-      else {
-        setCustomerEligibility(response.data);
-      }
-    } catch (error) {
-      console.error("Error:", error.message);
+      console.log(response.data);
+
+      setIsModalVisible(false);
       showMessage({
-        message: "Error: " + error.message,
-        type: "danger",
+        message: "Bill Paid",
+        type: "success",
         color: "#fff",
         backgroundColor: "#5e48a6",
-        icon: "info",
+        icon: "success",
         duration: 3000,
       });
-    }
-  }
-
-
-  //post request to send the bill details to the backend
-  const sendBillDetails = async (data) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3003/cashier/bill",
-        data
-      );
-      console.log(response.data);
+      clearBill();
+      navigation.goBack();
     } catch (error) {
       console.error("Error:", error.message);
     }
-  }
+  };
 
-
-  // need to send backend when the bill is paid ,  
+  // need to send backend when the bill is paid ,
   // customer phone number , body
   // payment method , body
   // total amount , body
@@ -112,7 +193,7 @@ const Checkout = () => {
   };
 
   const handledCancel = () => {
-    cancelBill();
+    clearBill();
     navigation.goBack();
     showMessage({
       message: "Bill Cancelled",
@@ -125,7 +206,7 @@ const Checkout = () => {
   };
 
   const handledProceed = () => {
-    if (total > customerRedeemPoints) {
+    if ((isRedeem && customerEligibility.eligibility) || !isRedeem) {
       if (billItems.length === 0) {
         showMessage({
           message: "No items in the bill",
@@ -193,28 +274,59 @@ const Checkout = () => {
         keyExtractor={(item) => item.item_id}
         style={styles.itemsContainer}
       />
-      <TouchableOpacity onPress={() => setIsRedeem(!isRedeem)}>
-        <View
-          style={[
-            styles.redeemLoyalityPoints,
-            isRedeem && { backgroundColor: "#e3d1f9" },
-          ]}
+      {customer && (
+        <TouchableOpacity
+          onPress={() => {
+            customer
+              ? customerEligibility.eligibility
+                ? setIsRedeem(!isRedeem)
+                : showMessage({
+                    message: "Customer not eligible to redeem points",
+                    type: "danger",
+                    color: "#fff",
+                    backgroundColor: "#5e48a6",
+                    icon: "danger",
+                    duration: 3000,
+                  })
+              : showMessage({
+                  message: "No customer selected",
+                  type: "danger",
+                  color: "#fff",
+                  backgroundColor: "#5e48a6",
+
+                  icon: "danger",
+                  duration: 3000,
+                });
+            checkCustomerEligibility();
+          }}
         >
-          <Text
+          <View
             style={[
-              styles.redeemLoyalityPointsText,
-              isRedeem ? { color: "#5e48a6" } : { color: "#ccc" },
+              styles.redeemLoyalityPoints,
+              customer && customerEligibility.eligibility
+                ? isRedeem && { backgroundColor: "#e3d1f9" }
+                : { backgroundColor: "#ccc" },
             ]}
+            disabled={
+              customerEligibility.eligibility && customer ? false : true
+            }
           >
-            Redeem Loyalty Points
-          </Text>
-          <FontAwesome
-            name="gift"
-            size={24}
-            color={isRedeem ? "#5e48a6" : "#ccc"}
-          />
-        </View>
-      </TouchableOpacity>
+            <Text
+              style={[
+                styles.redeemLoyalityPointsText,
+                isRedeem ? { color: "#5e48a6" } : { color: "#ccc" },
+              ]}
+            >
+              Redeem Loyalty Points
+            </Text>
+            <FontAwesome
+              name="gift"
+              size={24}
+              color={isRedeem ? "#5e48a6" : "#ccc"}
+            />
+          </View>
+        </TouchableOpacity>
+      )}
       <View style={styles.billDetailsContainer}>
         <View style={styles.billRow}>
           <Text style={styles.billLabel}>Total</Text>
@@ -271,16 +383,7 @@ const Checkout = () => {
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => {
-                  setIsModalVisible(false);
-                  showMessage({
-                    message: "Bill Paid",
-                    type: "success",
-                    color: "#fff",
-                    backgroundColor: "#5e48a6",
-                    icon: "success",
-                    duration: 3000,
-                  });
-                  navigation.goBack();
+                  sendBillDetails();
                 }}
               >
                 <Text style={styles.modalButtonText}>Pay</Text>
