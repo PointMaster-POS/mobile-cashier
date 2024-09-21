@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "wdio": "wdio run ./wdio.conf.js"
   },
   "dependencies": {
     "@ant-design/icons-react-native": "^2.3.2",
@@ -15,7 +16,9 @@
     "@react-native-picker/picker": "^2.8.0",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
+    "@wdio/cli": "^9.0.9",
     "axios": "^1.7.7",
+    "chai": "^5.1.1",
     "expo": "~51.0.28",
     "expo-barcode-scanner": "^13.0.1",
     "expo-status-bar": "~1.12.1",
@@ -23,10 +26,15 @@
     "react-native": "0.74.5",
     "react-native-elements": "^3.4.3",
     "react-native-flash-message": "^0.4.2",
-    "react-native-vector-icons": "^10.1.0"
+    "react-native-vector-icons": "^10.1.0",
+    "webdriverio": "^9.0.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@wdio/local-runner": "^9.0.9",
+    "@wdio/mocha-framework": "^9.0.8",
+    "@wdio/visual-service": "^6.0.0",
+    "appium-uiautomator2-driver": "^3.8.0"
   },
   "private": true
 }

@@ -102,6 +102,7 @@ const Menu = () => {
     const getToken = await AsyncStorage.getItem("accessToken");
     //fetch categories from the server
     try {
+      console.log("fetching categories");
       const response = await axios.get(
         "http://localhost:3003/cashier/inventory/categories",
         {
@@ -114,6 +115,7 @@ const Menu = () => {
     } catch (error) {
       console.error("Error:", error.message);
     }
+   
   };
 
   useEffect(() => {
