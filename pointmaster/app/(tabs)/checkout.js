@@ -24,9 +24,59 @@ const Checkout = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [isPaymentMethodSelected, setIsPaymentMethodSelected] = useState(false);
+  const [customerEligibility , setCustomerEligibility] = useState('');
+  const {
+    billItems,
+    total,
+    cancelBill,
+    increaseQuantity,
+    decreaseQuantity,
+    customer,
+  } = useContext(BillContext);
 
   //check if the customer has enough points to redeem
-  const customerRedeemPoints = 1000;
+  const checkCustomerEligibility = async () => {
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    try {
+      //in body we need to pass customer id
+      const response = await axios.get(
+        `http://localhost:3003/cashier/loyalty/eligibility`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+
+          body: {
+            customer_id: customer.customer_id,
+          }
+        });
+        
+      if (response.data.error) {
+        showMessage({
+          message: response.data.error,
+          type: "danger",
+          color: "#fff",
+          backgroundColor: "#5e48a6",
+          icon: "info",
+          duration: 3000,
+        });
+      }
+      else {
+        setCustomerEligibility(response.data);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+      showMessage({
+        message: "Error: " + error.message,
+        type: "danger",
+        color: "#fff",
+        backgroundColor: "#5e48a6",
+        icon: "info",
+        duration: 3000,
+      });
+    }
+  }
+
 
   //post request to send the bill details to the backend
   const sendBillDetails = async (data) => {
@@ -41,14 +91,6 @@ const Checkout = () => {
     }
   }
 
-  const {
-    billItems,
-    total,
-    cancelBill,
-    increaseQuantity,
-    decreaseQuantity,
-    customer,
-  } = useContext(BillContext);
 
   // need to send backend when the bill is paid ,  
   // customer phone number , body

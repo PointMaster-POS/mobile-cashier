@@ -31,7 +31,7 @@ const LoginScreen = () => {
         });
       } else {
         // Store the token and navigate to Menu
-        await AsyncStorage.setItem("accessToken", response.data);
+        await AsyncStorage.setItem("accessToken", response.data.accessToken); 
         showMessage({
           message: "Login successful",
           type: "success",
