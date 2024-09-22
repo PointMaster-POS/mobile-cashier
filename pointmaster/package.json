@@ -14,6 +14,7 @@
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-community/slider": "^4.5.3",
     "@react-native-picker/picker": "^2.8.0",
+    "@react-navigation/drawer": "^6.7.2",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "@wdio/cli": "^9.0.9",
@@ -26,6 +27,7 @@
     "react-native": "0.74.5",
     "react-native-elements": "^3.4.3",
     "react-native-flash-message": "^0.4.2",
+    "react-native-gesture-handler": "^2.19.0",
     "react-native-vector-icons": "^10.1.0",
     "webdriverio": "^9.0.9"
   },

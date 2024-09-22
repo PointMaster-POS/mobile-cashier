@@ -112,6 +112,7 @@ export const BillProvider = ({ children }) => {
         clearBill,
         customer,
         setCustomer,
+        setBillItems,
         i,
 
       }}
