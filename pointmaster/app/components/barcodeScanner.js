@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { BillContext } from '../../context/billcontext';
-import { AntDesign } from 'react-native-vector-icons';
+import { BillContext } from "../../context/billcontext";
+import { AntDesign } from "react-native-vector-icons";
 
 export default function BarcodeScanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const { addProductToBill } = useContext(BillContext);
-  
+
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -23,27 +23,34 @@ export default function BarcodeScanner() {
   };
 
   const handleCancel = () => {
-    alert('Cancel button pressed');
+    alert("Cancel button pressed");
   };
 
   const handleProceed = () => {
-    alert('Proceed button pressed');
+    alert("Proceed button pressed");
   };
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
 
-    // Here you should transform the scanned data into the appropriate item object.
-    // Example:
-    const item = {
-      qr: data, // Assuming 'data' is the QR code or barcode scanned
-      name: 'Scanned Item', // This should be fetched from a database or pre-defined list
-      price: 2.5, // The price should also be fetched accordingly
-      quantity: 1
-    };
+    //fetch item from the server
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    try {
+      const response = await axios.get(
+        `http://localhost:3003/cashier/inventory/product/barcode/${data}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const item = response.data;
 
-    addProductToBill(item);  // Pass the item object to the context function
-    console.log(data);
+      addProductToBill(item);
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
   };
 
   if (hasPermission === null) {
@@ -57,14 +64,13 @@ export default function BarcodeScanner() {
     <View style={styles.container}>
       {scanned ? (
         <View style={styles.buttonContainer}>
-          
-          <TouchableOpacity style={[styles.buttonContainer]} onPress={handleAddItem}>
-
+          <TouchableOpacity
+            style={[styles.buttonContainer]}
+            onPress={handleAddItem}
+          >
             <Text style={styles.buttonText}>Add More</Text>
-            <AntDesign name= "pluscircle" size={24} color="#e3d1f9" />
-
+            <AntDesign name="pluscircle" size={24} color="#e3d1f9" />
           </TouchableOpacity>
-         
         </View>
       ) : (
         <View style={styles.barcodeContainer}>
@@ -96,10 +102,6 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "#5e48a6",
     paddingHorizontal: 40,
-
-    
-  
-    
   },
   barcodeContainer: {
     width: "90%",

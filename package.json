@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.0.0",
-    "expo": "^51.0.32",
-    "react-native-flash-message": "^0.4.2"
-  }
-}

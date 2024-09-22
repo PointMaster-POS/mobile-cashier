@@ -1,59 +1,77 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import {AntDesign} from 'react-native-vector-icons';
-import { useContext } from "react";
+import { AntDesign } from "react-native-vector-icons";
 import { BillContext } from "../../context/billcontext";
+import { Buffer } from "buffer";
 
 const MenuItem = ({ item }) => {
-    const { increaseQuantity, decreaseQuantity, i } = useContext(BillContext);
-    
-   // console.log("item" + item);
-   console.log("wu" + item.quantity);
-  return (
+  const { increaseQuantity, decreaseQuantity } = useContext(BillContext);
+  const [base64Image, setBase64Image] = useState("");
 
+  useEffect(() => {
+    if (item.image_url && item.image_url.data) {
+      try {
+        const base64String = Buffer.from(item.image_url.data).toString("base64");
+        setBase64Image(base64String);
+      } catch (error) {
+        console.error("Error converting image data to base64:", error);
+      }
+    }
+  }, [item.image_url]);
+
+  // Debugging log
+  console.log("Base64 Image (end):", base64Image.slice(-50));
+  
+  return (
     <View style={styles.item}>
-      <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+      {base64Image ? (
+        <Image
+          source={{ uri: `data:image/jpeg;base64,${base64Image}` }} 
+          style={styles.itemImage}
+          resizeMode="cover" // Ensure the image covers the container
+        />
+      ) : (
+        <Text>No image available</Text>
+      )}
+
       <View style={styles.itemDetails}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
+        <Text style={styles.itemName}>{item.item_name}</Text>
+        <Text style={styles.itemPrice}>${item.discount}</Text>
       </View>
+
       <View style={styles.itemQuantity}>
         <TouchableOpacity
           style={styles.quantityButton}
-          onPress={() => decreaseQuantity(item.qr.trim().toLowerCase())}
+          onPress={() => decreaseQuantity(item.barcode.trim().toLowerCase())}
         >
-        <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
-          
+          <AntDesign name="minuscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
+
       <Text style={styles.quantityText}>{item.quantity}</Text>
-      
-      
+
       <View style={styles.itemQuantity}>
         <TouchableOpacity
           style={styles.quantityButton}
-          onPress={() => increaseQuantity(item.qr.trim().toLowerCase())}
+          onPress={() => increaseQuantity(item.barcode.trim().toLowerCase())}
         >
-            <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
+          <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-export default MenuItem;
-
 const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     padding: 15,
-    borderWidth : 1,
-    borderColor: "#eee",
+    borderWidth: 1,
+    borderColor: "#5e48a6",
     alignItems: "center",
-    marginHorizontal:10,
+    marginHorizontal: 10,
     marginVertical: 5,
     borderRadius: 10,
-    borderColor: "#5e48a6",
   },
   itemImage: {
     width: 50,
@@ -82,10 +100,12 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: "50%",
+    borderRadius: 25,
   },
   quantityText: {
     fontSize: 16,
     marginHorizontal: 10,
   },
 });
+
+export default MenuItem;

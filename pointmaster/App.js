@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { BillProvider } from "./context/billcontext";
@@ -9,12 +9,27 @@ import Main from "./app/(tabs)/main";
 import { AntDesign } from "react-native-vector-icons";
 import FlashMessage from "react-native-flash-message";
 import LoginScreen from "./app/(tabs)/login";
-const Stack = createNativeStackNavigator();
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
-export default function App() {
-  const [isScanMode, setIsScanMode] = React.useState(false);
+import History from "./app/(tabs)/history"; // Import History screen
+import HistoryButton from "./app/components/historybutton";
 
-  //button to toggle between scan and menu
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  const [isScanMode, setIsScanMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (token) {
+        setIsLoggedIn(true);
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
   const toggleScanMode = () => {
     setIsScanMode(!isScanMode);
     showMessage({
@@ -27,50 +42,45 @@ export default function App() {
     });
   };
 
-
   return (
     <BillProvider>
       <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen 
-            name="Menu" 
+        <Stack.Navigator initialRouteName={isLoggedIn ? "Menu" : "Login"}>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Menu"
             component={isScanMode ? Main : Menu}
             options={{
               title: isScanMode ? "SCAN MODE" : "MENU",
               headerRight: () => (
-                <TouchableOpacity 
-                  onPress={toggleScanMode} 
-      
-                >
-                  {isScanMode ? <AntDesign name="menufold" size={24} color="black" /> : <AntDesign name="scan1" size={24} color="black" />}
+                <TouchableOpacity onPress={toggleScanMode}>
+                  {isScanMode ? (
+                    <AntDesign name="menufold" size={24} color="black" />
+                  ) : (
+                    <AntDesign name="scan1" size={24} color="black" />
+                  )}
                 </TouchableOpacity>
               ),
             }}
           />
-         
-          <Stack.Screen 
-            name="Checkout" 
-            component={Checkout} 
+          <Stack.Screen
+            name="Checkout"
+            component={Checkout}
             options={{
               title: "CHECKOUT",
-              headerRight: () => (
-                <Button 
-                  title="Hold Bill" 
-                  onPress={() => showMessage({
-                    message: "Showing all hold bills within 2 hours",
-                    type: "info",
-                    color: "#fff",
-                    backgroundColor: "#5e48a6",
-                    icon: "info",
-                    duration: 3000,
-                  })}
-                />
-              ),
+              headerRight: () => <HistoryButton />, 
             }}
           />
-           
+          <Stack.Screen
+            name="History"
+            component={History}
+            options={{ title: "History" }}
+          />
         </Stack.Navigator>
-       
       </NavigationContainer>
       <FlashMessage position="top" />
     </BillProvider>
