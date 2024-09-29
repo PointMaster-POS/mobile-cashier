@@ -129,7 +129,7 @@ const Checkout = () => {
       loyalty_points_redeemed: isRedeem ? 1 : 0,
       discount: 0,
       received: total,
-      customer_phone: customer.customer_phone,
+      customer_phone: customer &&  customer.customer_phone,
       status: 1,
     };
 

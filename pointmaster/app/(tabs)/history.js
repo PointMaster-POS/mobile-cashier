@@ -82,7 +82,7 @@ const History = () => {
       });
       setSampleData(response.data);
 
-      console.log(response.data);
+      console.log(response.data[0].items);
     } catch (error) {
       console.error("Error:", error.message);
     }
@@ -101,7 +101,7 @@ const History = () => {
         {sampleData.map((item) => (
           <View key={item.id} style={styles.card}>
             <Text style={styles.cardTitle}>Bill ID: {item.bill_id}</Text>
-            <Text style={styles.cardText}>Total: ${item.total_price.toFixed(2)}</Text>
+            <Text style={styles.cardText}>Total: ${item.total_price}</Text>
             <Text style={styles.cardText}>Phone: {item.customer_phone}</Text>
             <Text style={styles.cardText}>Date: {item.date_time}</Text>
             <Text style={styles.cardText}>
@@ -141,14 +141,14 @@ const History = () => {
 
             {selectedBill && (
               <View>
-                <Text style={styles.modalText}>Bill ID: {selectedBill.id}</Text>
+                <Text style={styles.modalText}>Bill ID: {selectedBill.bill_id}</Text>
                 <Text style={styles.modalText}>
-                  Total: ${selectedBill.total.toFixed(2)}
+                  Total: ${selectedBill.total_price.toFixed(2)}
                 </Text>
                 <Text style={styles.modalText}>
-                  Phone: {selectedBill.phone}
+                  Phone: {selectedBill.customer_phone}
                 </Text>
-                <Text style={styles.modalText}>Date: {selectedBill.date}</Text>
+                <Text style={styles.modalText}>Date: {selectedBill.date_time}</Text>
                 <Text style={styles.modalText}>
                   Status:{" "}
                   {selectedBill.status === 0 ? "Incomplete" : "Completed"}
