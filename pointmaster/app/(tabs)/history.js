@@ -42,11 +42,12 @@ import { BillContext } from "../../context/billcontext";
 
 // ];
 
-const History = () => {
+const History = ({navigation}) => {
   const [selectedBill, setSelectedBill] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [sampleData, setSampleData] = useState([]);
-  const { customer, setCustomer, setBillItems } = useContext(BillContext);
+  const { customer, setCustomer, setBillItems,  isHoltBill,
+    setIsHoltBill } = useContext(BillContext);
 
   const handleContinueBill = (id) => {
     Alert.alert("Continue Bill", `Do you want to continue bill #${id}?`, [
@@ -57,8 +58,12 @@ const History = () => {
       {
         text: "Continue",
         onPress: () => {
-          customer && setCustomer(null);
-          setBillItems(sampleData.find((item) => item.id === id).items_list);
+          customer ? setCustomer(null) : null;
+          setBillItems(sampleData.find((item) => item.bill_id === id).items);
+          navigation.navigate("Menu");
+          setIsHoltBill(true);
+          
+          
         },
       },
     ]);
@@ -112,7 +117,7 @@ const History = () => {
               {item.status === 0 && (
                 <Button
                   title="Continue Bill"
-                  onPress={() => handleContinueBill(item.id)}
+                  onPress={() => handleContinueBill(item.bill_id)}
                   color="#5e48a6"
                 />
               )}

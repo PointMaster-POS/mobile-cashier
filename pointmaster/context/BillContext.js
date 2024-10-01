@@ -3,13 +3,7 @@ import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 export const BillContext = createContext();
-const categoriesAll = [
-  "Favorite",
-  "Hot Drink",
-  "Food",
-  "Soft Drink",
-  "Alcohol",
-];
+
 
 export const BillProvider = ({ children }) => {
   const [categories, setCategories] = useState(null);
@@ -17,6 +11,9 @@ export const BillProvider = ({ children }) => {
   const [i, setI] = useState(0);
   const [total, setTotal] = useState(0);
   const [customer, setCustomer] = useState(null);
+  const [isHoltBill, setIsHoltBill] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState();
+
 
   const addProductToBill = (item) => {
     const qrCode = item?.barcode?.trim().toLowerCase();
@@ -114,6 +111,10 @@ export const BillProvider = ({ children }) => {
         setCustomer,
         setBillItems,
         i,
+        isHoltBill,
+        setIsHoltBill,  
+        selectedCategory, 
+        setSelectedCategory
 
       }}
     >

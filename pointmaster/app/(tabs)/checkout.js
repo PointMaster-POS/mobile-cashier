@@ -33,6 +33,9 @@ const Checkout = () => {
     increaseQuantity,
     decreaseQuantity,
     customer,
+    isHoltBill,
+    setIsHoltBill
+
   } = useContext(BillContext);
 
   //check if the customer has enough points to redeem
@@ -113,7 +116,7 @@ const Checkout = () => {
 
   */
   //post request to send the bill details to the backend
-  const sendBillDetails = async () => {
+  const sendBillDetails = async (hold) => {
     const reducedItems = billItems.map((item) => {
       return {
         item_id: item.item_id,
@@ -130,13 +133,13 @@ const Checkout = () => {
       discount: 0,
       received: total,
       customer_phone: customer &&  customer.customer_phone,
-      status: 1,
+      status: hold ? 0 : 1,
     };
 
     const token = await AsyncStorage.getItem("accessToken");
     try {
       const response = await axios.post(
-        `http://localhost:3003/cashier/bill/new-bill`,
+        `http://localhost:3003/cashier/bill/${isHoltBill ? 'update' : 'new-bill'}`,
         data,
         {
           headers: {
@@ -159,7 +162,7 @@ const Checkout = () => {
 
       setIsModalVisible(false);
       showMessage({
-        message: "Bill Paid",
+        message: isHoltBill ? "Bill is added to the Holt Bill list" : "Bill is paid", 
         type: "success",
         color: "#fff",
         backgroundColor: "#5e48a6",
@@ -383,8 +386,10 @@ const Checkout = () => {
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => {
-                  sendBillDetails();
+                  sendBillDetails(false);
+                  setIsHoltBill(false);
                 }}
+                onLongPress={() => {sendBillDetails(true); setIsHoltBill(true)}}
               >
                 <Text style={styles.modalButtonText}>Pay</Text>
               </TouchableOpacity>

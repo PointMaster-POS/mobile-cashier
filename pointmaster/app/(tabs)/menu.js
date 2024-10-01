@@ -69,8 +69,8 @@ const Menu = () => {
   //     }
   // ]
 
-  const { billItems, setCategories, categories } = useContext(BillContext);
-  const [selectedCategory, setSelectedCategory] = useState("Favorite");
+  const { billItems, setCategories, categories ,selectedCategory, setSelectedCategory} = useContext(BillContext);
+ 
   const [items, setItems] = useState([]);
 
   //fetach items related to the selected category
@@ -112,6 +112,7 @@ const Menu = () => {
         }
       );
       setCategories(response.data);
+      setSelectedCategory(response.data[0].category_id);
     } catch (error) {
       console.error("Error:", error.message);
     }
