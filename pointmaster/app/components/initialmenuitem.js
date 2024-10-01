@@ -1,17 +1,18 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { BillContext } from '../../context/billcontext';
 
 
 const InitialMenuItem = ({ item }) => {
     const { addProductToBill } = useContext(BillContext);
+    const [isImageLoading, setIsImageLoading] = useState(true);
     
     return (
         <TouchableOpacity
         style={styles.item}
         onPress={() => addProductToBill(item)}
         >
-        <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+        <Image source={{ uri: item.image_url }} style={styles.itemImage} />
         <View style={styles.itemDetails}>
             <Text style={styles.itemName}>{item.item_name}</Text>
             <Text style={styles.itemPrice}>${item.discount}</Text>
