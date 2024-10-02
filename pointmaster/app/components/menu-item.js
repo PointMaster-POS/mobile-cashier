@@ -5,7 +5,7 @@ import { BillContext } from "../../context/billcontext";
 import { Buffer } from "buffer";
 
 const MenuItem = ({ item }) => {
-  const { increaseQuantity, decreaseQuantity } = useContext(BillContext);
+  const { increaseQuantity, decreaseQuantity ,setItemQuantity} = useContext(BillContext);
   // const [base64Image, setBase64Image] = useState("");
 
   // useEffect(() => {
@@ -23,7 +23,9 @@ const MenuItem = ({ item }) => {
   // console.log("Base64 Image (end):", base64Image.slice(-50));
   
   return (
-    <View style={styles.item}>
+ 
+    <View style={styles.item} key={item.barcode.trim().toLowerCase()} onClick={() => setItemQuantity(item,1)}>
+         
       
         <Image
           source={{ uri: item.image_url }} 
@@ -55,7 +57,9 @@ const MenuItem = ({ item }) => {
           <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
+      
     </View>
+
   );
 };
 

@@ -80,7 +80,7 @@ const History = ({navigation}) => {
     const accessToken = await AsyncStorage.getItem("accessToken");
     console.log(accessToken);
     try {
-      const response = await axios.get( "http://localhost:3003/cashier/history", {
+      const response = await axios.get( "http://192.168.1.109:3003/cashier/history", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

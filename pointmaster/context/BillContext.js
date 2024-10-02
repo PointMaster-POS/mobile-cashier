@@ -13,6 +13,7 @@ export const BillProvider = ({ children }) => {
   const [customer, setCustomer] = useState(null);
   const [isHoltBill, setIsHoltBill] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
+ 
 
 
   const addProductToBill = (item) => {
@@ -89,6 +90,25 @@ export const BillProvider = ({ children }) => {
     console.log("total" + total);
   };
 
+  const setItemQuantity = (barcode, quantity) => {
+    const qrCode = barcode?.trim().toLowerCase();
+    if (!qrCode) return;
+
+    const updatedItems = billItems.map((billItem) => {
+      if (billItem.barcode.trim().toLowerCase() === qrCode) {
+        return { ...billItem, quantity };
+      }
+      return billItem;
+    });
+    setBillItems(updatedItems);
+    setI(i);
+    //calculate total and set
+    setTotal(
+      billItems.reduce((acc, item) => acc + item.discount * item.quantity, 0)
+    );
+    console.log("total" + total);
+  };
+
   const clearBill = () => {
     setCustomer(null);
     setBillItems([]);
@@ -114,7 +134,8 @@ export const BillProvider = ({ children }) => {
         isHoltBill,
         setIsHoltBill,  
         selectedCategory, 
-        setSelectedCategory
+        setSelectedCategory,
+        setItemQuantity
 
       }}
     >

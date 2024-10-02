@@ -3,6 +3,8 @@ import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { BillContext } from "../../context/billcontext";
 import { AntDesign } from "react-native-vector-icons";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function BarcodeScanner() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -37,7 +39,7 @@ export default function BarcodeScanner() {
     const accessToken = await AsyncStorage.getItem("accessToken");
     try {
       const response = await axios.get(
-        `http://localhost:3003/cashier/inventory/product/barcode/${data}`,
+        `http://192.168.1.109:3003/cashier/inventory/product/barcode/${data}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

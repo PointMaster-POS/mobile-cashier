@@ -11,6 +11,7 @@ const InitialMenuItem = ({ item }) => {
         <TouchableOpacity
         style={styles.item}
         onPress={() => addProductToBill(item)}
+        key={item.barcode.trim().toLowerCase()}
         >
         <Image source={{ uri: item.image_url }} style={styles.itemImage} />
         <View style={styles.itemDetails}>
