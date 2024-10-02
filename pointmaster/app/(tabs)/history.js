@@ -163,11 +163,11 @@ const History = ({navigation}) => {
                 {selectedBill.items.map((item, index) => (
                   <View key={index} style={styles.itemContainer}>
                     <Image
-                      source={{ uri: item.image }}
+                      source={{ uri: item.image_url }}
                       style={styles.itemImage}
                     />
                     <Text style={styles.price}>
-                      {item.name} (x{item.quantity})
+                      {item.item_name} (x{item.quantity})
                     </Text>
                   </View>
                 ))}

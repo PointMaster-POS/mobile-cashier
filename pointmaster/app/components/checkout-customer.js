@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   Button,
+  Image,
 } from "react-native";
 import { BillContext } from "../../context/billcontext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -36,7 +37,7 @@ const CheckOutCustomer = () => {
           },
         }
       );
-
+      console.log(response.data);
       setIsModalVisible(false);
       setCustomer(response.data);
       showMessage({
@@ -65,13 +66,21 @@ const CheckOutCustomer = () => {
     <View>
       {customer ? (
         <View style={styles.mainCustomerContainer}>
+          {/* Display customer image */}
+          <View style={styles.customerDContainer}>
+          <Image
+            source={customer.photo_url ? { uri: customer.photo_url } : null}
+            style={styles.customerImage}
+          />
+          
           <View style={styles.customerContainer}>
             <Text style={styles.customerText}>
               Customer: {customer.customer_name}
             </Text>
             <Text style={styles.tableText}>
-              Phone: {customer.customer_phone}
+              Points: {customer.points}
             </Text>
+          </View>
           </View>
           <View style={styles.editButtonContainer}>
             <TouchableOpacity onPress={handleOpenAddCustomerModel}>
@@ -123,6 +132,19 @@ const CheckOutCustomer = () => {
 export default CheckOutCustomer;
 
 const styles = StyleSheet.create({
+  customerDContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  customerImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    marginLeft: 20,
+
+  },
   addCustomer: {
     color: "#5e48a6",
     fontWeight: "bold",

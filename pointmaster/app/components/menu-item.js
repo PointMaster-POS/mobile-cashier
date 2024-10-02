@@ -24,7 +24,7 @@ const MenuItem = ({ item }) => {
   
   return (
  
-    <View style={styles.item} key={item.barcode.trim().toLowerCase()} onClick={() => setItemQuantity(item,1)}>
+    <View style={styles.item} key={item.barcode.trim().toLowerCase()} >
          
       
         <Image
@@ -35,7 +35,7 @@ const MenuItem = ({ item }) => {
    
       <View style={styles.itemDetails}>
         <Text style={styles.itemName}>{item.item_name}</Text>
-        <Text style={styles.itemPrice}>${item.discount}</Text>
+        <Text style={styles.itemPrice}>Rs. {item.price}</Text>
       </View>
 
       <View style={styles.itemQuantity}>
