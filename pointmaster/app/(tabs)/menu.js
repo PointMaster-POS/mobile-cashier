@@ -79,7 +79,7 @@ const Menu = () => {
     //fetch items from the server
     try {
       const response = await axios.get(
-        `http://192.168.1.109:3003/cashier/inventory/products/${selectedCategory}`,
+        `http://209.97.173.123:3003/cashier/inventory/products/${selectedCategory}`,
         {
           headers: {
             Authorization: `Bearer ${getToken}`,
@@ -104,7 +104,7 @@ const Menu = () => {
     try {
       console.log("fetching categories");
       const response = await axios.get(
-        "http://192.168.1.109:3003/cashier/inventory/categories",
+        "http://209.97.173.123:3003/cashier/inventory/categories",
         {
           headers: {
             Authorization: `Bearer ${getToken}`,

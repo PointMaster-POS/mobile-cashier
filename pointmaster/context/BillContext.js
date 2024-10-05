@@ -38,7 +38,7 @@ export const BillProvider = ({ children }) => {
     }
     setI(i + 1);
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity, 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     );
     console.log("total" + total);
   };
@@ -61,7 +61,7 @@ export const BillProvider = ({ children }) => {
     setBillItems(updatedItems);
     setI(i + 1);
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity, 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     );
     console.log("total" + total);
   };
@@ -85,7 +85,7 @@ export const BillProvider = ({ children }) => {
     setI(i - 1);
     //calculate total and set
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity?item.quantity: 0 , 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity?item.quantity: 0 , 0)
     );
     console.log("total" + total);
   };
@@ -104,7 +104,7 @@ export const BillProvider = ({ children }) => {
     setI(i);
     //calculate total and set
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity, 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     );
     console.log("total" + total);
   };

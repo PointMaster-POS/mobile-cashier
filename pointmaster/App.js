@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
 import History from "./app/(tabs)/history"; // Import History screen
 import HistoryButton from "./app/components/historybutton";
+import { LogBox } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,7 @@ export default function App() {
     });
   };
 
+  LogBox.ignoreAllLogs(true);
   return (
     <BillProvider>
       <NavigationContainer>

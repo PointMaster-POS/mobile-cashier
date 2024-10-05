@@ -30,7 +30,7 @@ const CheckOutCustomer = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.1.109:3003/cashier/customer/${phoneNumber}`,
+        `http://209.97.173.123:3003/cashier/customer/${phoneNumber}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

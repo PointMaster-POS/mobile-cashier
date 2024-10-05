@@ -47,7 +47,7 @@ const Checkout = () => {
       try {
         // Use POST instead of GET so you can send a body
         const response = await axios.post(
-          `http://192.168.1.109:3003/cashier/loyalty/eligibility`,
+          `http://localhost:3003/cashier/loyalty/eligibility`,
           { customer_id: customer.customer_id }, // The body with customer_id
           {
             headers: {
@@ -139,7 +139,7 @@ const Checkout = () => {
     const token = await AsyncStorage.getItem("accessToken");
     try {
       const response = await axios.post(
-        `http://192.168.1.109:3003/cashier/bill/${isHoltBill ? 'update' : 'new-bill'}`,
+        `http://209.97.173.123:3003/cashier/bill/${isHoltBill ? 'update' : 'new-bill'}`,
         data,
         {
           headers: {

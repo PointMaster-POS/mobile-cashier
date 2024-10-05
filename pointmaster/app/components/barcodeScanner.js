@@ -39,7 +39,7 @@ export default function BarcodeScanner() {
     const accessToken = await AsyncStorage.getItem("accessToken");
     try {
       const response = await axios.get(
-        `http://192.168.1.109:3003/cashier/inventory/product/barcode/${data}`,
+        `http://209.97.173.123:3003/cashier/inventory/product/barcode/${data}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
