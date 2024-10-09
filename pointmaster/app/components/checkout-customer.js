@@ -13,19 +13,19 @@ import { BillContext } from "../../context/billcontext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
-
+import BarcodeScanner from "./customerbarcodescanner"; // Importing the BarcodeScanner component
 
 const CheckOutCustomer = () => {
   const { customer, setCustomer } = useContext(BillContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isScannerVisible, setIsScannerVisible] = useState(false); // State for showing scanner
 
   const handleOpenAddCustomerModel = () => {
     setIsModalVisible(true);
   };
 
   const handleSaveCustomer = async () => {
-    //fetch customer details from the server
     const accessToken = await AsyncStorage.getItem("accessToken");
 
     try {
@@ -48,11 +48,12 @@ const CheckOutCustomer = () => {
         icon: "success",
         duration: 3000,
       });
+      setIsModalVisible(false);
     } catch (error) {
       console.error("Error:", error.message);
       setCustomer(null);
       showMessage({
-        message: "customer not found",
+        message: "Customer not found",
         type: "danger",
         color: "#fff",
         backgroundColor: "#5e48a6",
@@ -68,19 +69,19 @@ const CheckOutCustomer = () => {
         <View style={styles.mainCustomerContainer}>
           {/* Display customer image */}
           <View style={styles.customerDContainer}>
-          <Image
-            source={customer.photo_url ? { uri: customer.photo_url } : null}
-            style={styles.customerImage}
-          />
-          
-          <View style={styles.customerContainer}>
-            <Text style={styles.customerText}>
-              Customer: {customer.customer_name}
-            </Text>
-            <Text style={styles.tableText}>
-              Points: {customer.points}
-            </Text>
-          </View>
+            <Image
+              source={customer.photo_url ? { uri: customer.photo_url } : null}
+              style={styles.customerImage}
+            />
+
+            <View style={styles.customerContainer}>
+              <Text style={styles.customerText}>
+                Customer: {customer.customer_name}
+              </Text>
+              <Text style={styles.tableText}>
+                Points: {customer.points}
+              </Text>
+            </View>
           </View>
           <View style={styles.editButtonContainer}>
             <TouchableOpacity onPress={handleOpenAddCustomerModel}>
@@ -100,6 +101,7 @@ const CheckOutCustomer = () => {
       )}
 
       {/* Modal for adding customer */}
+      {isModalVisible && (
       <Modal
         animationType="slide"
         transparent={true}
@@ -122,9 +124,24 @@ const CheckOutCustomer = () => {
               <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
               <Button title="Save" onPress={handleSaveCustomer} />
             </View>
+
+            {/* Toggle Barcode Scanner visibility */}
+            <Button
+              title={isScannerVisible ? "Hide Scanner" : "Show Scanner"}
+              onPress={() => setIsScannerVisible(!isScannerVisible)}
+              styles={styles.scannerButton}
+            />
+
+            {/* Display Barcode Scanner if visible */}
+            {isScannerVisible && (
+              <View style={styles.scannerContainer}>
+                <BarcodeScanner addCustomerToBill={setCustomer} isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} />
+              </View>
+            )}
           </View>
         </View>
       </Modal>
+      )}
     </View>
   );
 };
@@ -143,7 +160,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     marginLeft: 20,
-
   },
   addCustomer: {
     color: "#5e48a6",
@@ -151,9 +167,8 @@ const styles = StyleSheet.create({
   },
   addCustomerContainer: {
     padding: 20,
-    backgroundColor: "#5e48a6",
-    borderRadius: 10,
     backgroundColor: "#e3d1f9",
+    borderRadius: 10,
   },
   noCustomerContainer: {
     flexDirection: "row",
@@ -195,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)", // Dim background
   },
   modalContent: {
-    width: 300,
+    width: 350,
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
@@ -223,5 +238,19 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 20,
+    
+  },
+  scannerContainer: {
+    height: 200, // Adjust the height of the scanner
+    marginTop: 20,
+    borderRadius: 10,
+    overflow: "hidden",
+    backgroundColor: "#000",
+  },
+  scannerButton: {
+    marginBottom: 20,
+    backgroundColor: "#5e48a6",
+    
   },
 });
