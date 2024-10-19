@@ -32,8 +32,8 @@ const BillItem = ({ item}) => {
         />
         <View style={styles.detailContainer}>
           <Text style={styles.itemName}>{item.item_name}</Text>
-          <Text style={styles.itemPrice}>Rs. {item.discount * quantity}</Text>
-          <Text style={styles.itemPerPrice}>Rs. {item.discount}/item</Text>
+          <Text style={styles.itemPrice}>Rs. {item.price * quantity}</Text>
+          <Text style={styles.itemPerPrice}>Rs. {item.price}/item</Text>
         </View>
       </View>
       <View style={styles.quantityContainer}>

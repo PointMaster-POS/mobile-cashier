@@ -17,7 +17,7 @@ const CheckOutButton =() => {
         <View style={styles.orderButtonContainer}>
         <TouchableOpacity style={styles.orderButton} onPress = {handledAsyncNavigation}>
                 <Text style={styles.orderButtonText}>Proceed New Order</Text>
-                <Text style={styles.orderButtonText}>{i} Items ${total}</Text>
+                <Text style={styles.orderButtonText}>{i} Items Rs. {total}</Text>
                 <AntDesign name="right" size={24} color="#e3d1f9" />
         </TouchableOpacity>
         </View>

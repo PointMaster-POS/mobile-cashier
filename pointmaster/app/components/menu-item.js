@@ -5,38 +5,37 @@ import { BillContext } from "../../context/billcontext";
 import { Buffer } from "buffer";
 
 const MenuItem = ({ item }) => {
-  const { increaseQuantity, decreaseQuantity } = useContext(BillContext);
-  const [base64Image, setBase64Image] = useState("");
+  const { increaseQuantity, decreaseQuantity ,setItemQuantity} = useContext(BillContext);
+  // const [base64Image, setBase64Image] = useState("");
 
-  useEffect(() => {
-    if (item.image_url && item.image_url.data) {
-      try {
-        const base64String = Buffer.from(item.image_url.data).toString("base64");
-        setBase64Image(base64String);
-      } catch (error) {
-        console.error("Error converting image data to base64:", error);
-      }
-    }
-  }, [item.image_url]);
+  // useEffect(() => {
+  //   if (item.image_url && item.image_url.data) {
+  //     try {
+  //       const base64String = Buffer.from(item.image_url.data).toString("base64");
+  //       setBase64Image(base64String);
+  //     } catch (error) {
+  //       console.error("Error converting image data to base64:", error);
+  //     }
+  //   }
+  // }, [item.image_url]);
 
   // Debugging log
-  console.log("Base64 Image (end):", base64Image.slice(-50));
+  // console.log("Base64 Image (end):", base64Image.slice(-50));
   
   return (
-    <View style={styles.item}>
-      {base64Image ? (
+ 
+    <View style={styles.item} key={item.barcode.trim().toLowerCase()} >
+         
+      
         <Image
-          source={{ uri: `data:image/jpeg;base64,${base64Image}` }} 
+          source={{ uri: item.image_url }} 
           style={styles.itemImage}
           resizeMode="cover" // Ensure the image covers the container
         />
-      ) : (
-        <Text>No image available</Text>
-      )}
-
+   
       <View style={styles.itemDetails}>
         <Text style={styles.itemName}>{item.item_name}</Text>
-        <Text style={styles.itemPrice}>${item.discount}</Text>
+        <Text style={styles.itemPrice}>Rs. {item.price}</Text>
       </View>
 
       <View style={styles.itemQuantity}>
@@ -58,7 +57,9 @@ const MenuItem = ({ item }) => {
           <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
+      
     </View>
+
   );
 };
 

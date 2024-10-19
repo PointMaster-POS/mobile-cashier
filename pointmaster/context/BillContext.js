@@ -3,13 +3,7 @@ import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 export const BillContext = createContext();
-const categoriesAll = [
-  "Favorite",
-  "Hot Drink",
-  "Food",
-  "Soft Drink",
-  "Alcohol",
-];
+
 
 export const BillProvider = ({ children }) => {
   const [categories, setCategories] = useState(null);
@@ -17,6 +11,10 @@ export const BillProvider = ({ children }) => {
   const [i, setI] = useState(0);
   const [total, setTotal] = useState(0);
   const [customer, setCustomer] = useState(null);
+  const [isHoltBill, setIsHoltBill] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState();
+ 
+
 
   const addProductToBill = (item) => {
     const qrCode = item?.barcode?.trim().toLowerCase();
@@ -40,7 +38,7 @@ export const BillProvider = ({ children }) => {
     }
     setI(i + 1);
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity, 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     );
     console.log("total" + total);
   };
@@ -63,7 +61,7 @@ export const BillProvider = ({ children }) => {
     setBillItems(updatedItems);
     setI(i + 1);
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity, 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     );
     console.log("total" + total);
   };
@@ -87,7 +85,26 @@ export const BillProvider = ({ children }) => {
     setI(i - 1);
     //calculate total and set
     setTotal(
-      billItems.reduce((acc, item) => acc + item.discount * item.quantity?item.quantity: 0 , 0)
+      billItems.reduce((acc, item) => acc + item.price * item.quantity?item.quantity: 0 , 0)
+    );
+    console.log("total" + total);
+  };
+
+  const setItemQuantity = (barcode, quantity) => {
+    const qrCode = barcode?.trim().toLowerCase();
+    if (!qrCode) return;
+
+    const updatedItems = billItems.map((billItem) => {
+      if (billItem.barcode.trim().toLowerCase() === qrCode) {
+        return { ...billItem, quantity };
+      }
+      return billItem;
+    });
+    setBillItems(updatedItems);
+    setI(i);
+    //calculate total and set
+    setTotal(
+      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     );
     console.log("total" + total);
   };
@@ -114,6 +131,11 @@ export const BillProvider = ({ children }) => {
         setCustomer,
         setBillItems,
         i,
+        isHoltBill,
+        setIsHoltBill,  
+        selectedCategory, 
+        setSelectedCategory,
+        setItemQuantity
 
       }}
     >

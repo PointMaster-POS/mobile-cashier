@@ -69,8 +69,8 @@ const Menu = () => {
   //     }
   // ]
 
-  const { billItems, setCategories, categories } = useContext(BillContext);
-  const [selectedCategory, setSelectedCategory] = useState("Favorite");
+  const { billItems, setCategories, categories ,selectedCategory, setSelectedCategory} = useContext(BillContext);
+ 
   const [items, setItems] = useState([]);
 
   //fetach items related to the selected category
@@ -79,7 +79,7 @@ const Menu = () => {
     //fetch items from the server
     try {
       const response = await axios.get(
-        `http://localhost:3003/cashier/inventory/products/${selectedCategory}`,
+        `http://209.97.173.123:3003/cashier/inventory/products/${selectedCategory}`,
         {
           headers: {
             Authorization: `Bearer ${getToken}`,
@@ -104,14 +104,16 @@ const Menu = () => {
     try {
       console.log("fetching categories");
       const response = await axios.get(
-        "http://localhost:3003/cashier/inventory/categories",
+        "http://209.97.173.123:3003/cashier/inventory/categories",
         {
           headers: {
+            contentType: "application/json",
             Authorization: `Bearer ${getToken}`,
           },
         }
       );
       setCategories(response.data);
+      setSelectedCategory(response.data[0].category_id);
     } catch (error) {
       console.error("Error:", error.message);
     }

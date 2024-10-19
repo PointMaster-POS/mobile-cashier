@@ -42,11 +42,12 @@ import { BillContext } from "../../context/billcontext";
 
 // ];
 
-const History = () => {
+const History = ({navigation}) => {
   const [selectedBill, setSelectedBill] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [sampleData, setSampleData] = useState([]);
-  const { customer, setCustomer, setBillItems } = useContext(BillContext);
+  const { customer, setCustomer, setBillItems,  isHoltBill,
+    setIsHoltBill } = useContext(BillContext);
 
   const handleContinueBill = (id) => {
     Alert.alert("Continue Bill", `Do you want to continue bill #${id}?`, [
@@ -57,8 +58,12 @@ const History = () => {
       {
         text: "Continue",
         onPress: () => {
-          customer && setCustomer(null);
-          setBillItems(sampleData.find((item) => item.id === id).items_list);
+          customer ? setCustomer(null) : null;
+          setBillItems(sampleData.find((item) => item.bill_id === id).items);
+          navigation.navigate("Menu");
+          setIsHoltBill(true);
+          
+          
         },
       },
     ]);
@@ -75,14 +80,14 @@ const History = () => {
     const accessToken = await AsyncStorage.getItem("accessToken");
     console.log(accessToken);
     try {
-      const response = await axios.get( "http://localhost:3003/cashier/history", {
+      const response = await axios.get( "http://209.97.173.123:3003/cashier/history", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
       setSampleData(response.data);
 
-      console.log(response.data);
+      console.log(response.data[0].items);
     } catch (error) {
       console.error("Error:", error.message);
     }
@@ -101,7 +106,7 @@ const History = () => {
         {sampleData.map((item) => (
           <View key={item.id} style={styles.card}>
             <Text style={styles.cardTitle}>Bill ID: {item.bill_id}</Text>
-            <Text style={styles.cardText}>Total: ${item.total_price.toFixed(2)}</Text>
+            <Text style={styles.cardText}>Total: ${item.total_price}</Text>
             <Text style={styles.cardText}>Phone: {item.customer_phone}</Text>
             <Text style={styles.cardText}>Date: {item.date_time}</Text>
             <Text style={styles.cardText}>
@@ -112,7 +117,7 @@ const History = () => {
               {item.status === 0 && (
                 <Button
                   title="Continue Bill"
-                  onPress={() => handleContinueBill(item.id)}
+                  onPress={() => handleContinueBill(item.bill_id)}
                   color="#5e48a6"
                 />
               )}
@@ -141,14 +146,14 @@ const History = () => {
 
             {selectedBill && (
               <View>
-                <Text style={styles.modalText}>Bill ID: {selectedBill.id}</Text>
+                <Text style={styles.modalText}>Bill ID: {selectedBill.bill_id}</Text>
                 <Text style={styles.modalText}>
-                  Total: ${selectedBill.total.toFixed(2)}
+                  Total: ${selectedBill.total_price.toFixed(2)}
                 </Text>
                 <Text style={styles.modalText}>
-                  Phone: {selectedBill.phone}
+                  Phone: {selectedBill.customer_phone}
                 </Text>
-                <Text style={styles.modalText}>Date: {selectedBill.date}</Text>
+                <Text style={styles.modalText}>Date: {selectedBill.date_time}</Text>
                 <Text style={styles.modalText}>
                   Status:{" "}
                   {selectedBill.status === 0 ? "Incomplete" : "Completed"}
@@ -158,11 +163,11 @@ const History = () => {
                 {selectedBill.items.map((item, index) => (
                   <View key={index} style={styles.itemContainer}>
                     <Image
-                      source={{ uri: item.image }}
+                      source={{ uri: item.image_url }}
                       style={styles.itemImage}
                     />
                     <Text style={styles.price}>
-                      {item.name} (x{item.quantity})
+                      {item.item_name} (x{item.quantity})
                     </Text>
                   </View>
                 ))}
