@@ -107,6 +107,7 @@ const Menu = () => {
         "http://209.97.173.123:3003/cashier/inventory/categories",
         {
           headers: {
+            contentType: "application/json",
             Authorization: `Bearer ${getToken}`,
           },
         }
