@@ -7,6 +7,8 @@ import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 
 const LoginScreen = () => {
+
+  // navigation to menu page
   const navigation = useNavigation();
 
   // States to handle user input
