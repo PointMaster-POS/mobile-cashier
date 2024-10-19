@@ -4,14 +4,22 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { cashierUrl } from "../../apiurl";
 
-const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }) => {
+const BarcodeScanner = ({
+  addCustomerToBill,
+  isModalVisible,
+  setIsModalVisible,
+}) => {
+  // states to handle camera permissions and scanned status
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
+  // ----------------- Get Screen Dimensions -----------------
   const screenHeight = Dimensions.get("window").height;
   const screenWidth = Dimensions.get("window").width;
 
+  // ----------------- Camera Permissions -----------------
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -21,6 +29,7 @@ const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }
     getBarCodeScannerPermissions();
   }, []);
 
+  // ----------------- Handle Barcode Scanned -----------------
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     showMessage({
@@ -36,9 +45,9 @@ const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }
     const accessToken = await AsyncStorage.getItem("accessToken");
     console.log(data);
     try {
-        
+      const url =  cashierUrl;
       const response = await axios.get(
-        `http://209.97.173.123:3003/cashier/customer/${data}`,
+        `${url}/cashier/customer/${data}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -54,7 +63,7 @@ const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }
         icon: "success",
         duration: 3000,
       });
-        setIsModalVisible(false);
+      setIsModalVisible(false);
     } catch (error) {
       console.error("Error:", error.message);
       addCustomerToBill(null);
@@ -69,6 +78,7 @@ const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }
     }
   };
 
+  // ----------------- Render Relevent View -----------------
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
@@ -78,7 +88,12 @@ const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }
 
   return (
     <View style={styles.container}>
-      <View style={[styles.cameraContainer, { width: screenWidth * 0.8, height: screenHeight * 0.4 }]}>
+      <View
+        style={[
+          styles.cameraContainer,
+          { width: screenWidth * 0.8, height: screenHeight * 0.4 },
+        ]}
+      >
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           style={styles.camera}
@@ -95,8 +110,7 @@ const BarcodeScanner = ({ addCustomerToBill ,isModalVisible, setIsModalVisible }
   );
 };
 
-export default BarcodeScanner;
-
+// ----------------- Styles -----------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -115,3 +129,5 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 });
+
+export default BarcodeScanner;
