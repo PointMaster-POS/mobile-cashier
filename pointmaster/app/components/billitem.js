@@ -4,10 +4,12 @@ import { AntDesign } from "react-native-vector-icons";
 import { getColor } from "../../utils/colorprovider";
 import { BillContext } from "../../context/billcontext";
 
-const BillItem = ({ item}) => {
+const BillItem = ({ item }) => {
+  // Get the quantity from the context and set it to the state
   const [quantity, setQuantity] = useState(item.quantity);
-    const { increaseQuantity, decreaseQuantity } = useContext(BillContext);
+  const { increaseQuantity, decreaseQuantity } = useContext(BillContext);
 
+  // ----------------- Increase and Decrease Quantity -----------------
   const handleAdd = () => {
     increaseQuantity(item.barcode.trim().toLowerCase());
   };
@@ -18,10 +20,12 @@ const BillItem = ({ item}) => {
     }
   };
 
+  // ----------------- Update the quantity when it changes -----------------
   useEffect(() => {
     setQuantity(item.quantity);
   }, [item.quantity]);
 
+  // ----------------- Display the bill item -----------------
   return (
     <View style={styles.itemContainer}>
       <View style={styles.imageDetailContainer}>
@@ -55,11 +59,12 @@ const BillItem = ({ item}) => {
   );
 };
 
+// ----------------- Styles -----------------
 const styles = StyleSheet.create({
-    itemPerPrice: {
-        fontSize: 12,
-        color: "#5e48a6",
-    },
+  itemPerPrice: {
+    fontSize: 12,
+    color: "#5e48a6",
+  },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: "#5e48a6",
-   
+
     borderRadius: 10,
     margin: 5,
     padding: 15,

@@ -7,10 +7,13 @@ import { AntDesign } from "react-native-vector-icons";
 import { BillContext } from "../../context/billcontext";
 
 const BillContent = () => {
+  // Get the bill items from the context
   const { billItems } = useContext(BillContext);
 
+  // ----------------- Display the bill items -----------------
   return (
     <View style={styles.billContainer}>
+      {/* If there are items in the bill, display them */}
       {billItems.length > 0 ? (
         <ScrollView style={styles.outerItems}>
           {billItems.map((item, index) => (
@@ -24,6 +27,7 @@ const BillContent = () => {
         </View>
       )}
       <View style={styles.billHeaderContainer}>
+        {/* Display the total amount */}
         {billItems.length > 0 && (
           <Text style={styles.totalText}>
             Total: Rs.{" "}
