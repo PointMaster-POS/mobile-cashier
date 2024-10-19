@@ -14,42 +14,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useContext } from "react";
 import { BillContext } from "../../context/billcontext";
+import { cashierUrl } from "../../apiurl";
 
-// Sample bill history data including status (0: Incomplete, 1: Completed)
-// const sampleData = [
-//   {
-//     id: '1',
-//     total: 45.67,
-//     phone: '123-456-7890',
-//     date: '2024-09-21 14:35',
-//     status: 0,
-//     items: [
-//       { name: "Burger", quantity: 2, image: "https://via.placeholder.com/40" },
-//       { name: "Fries", quantity: 1, image: "https://via.placeholder.com/40" },
-//     ],
-//   },
-//   {
-//     id: '2',
-//     total: 78.99,
-//     phone: '987-654-3210',
-//     date: '2024-09-20 11:22',
-//     status: 1,
-//     items: [
-//       { name: "Pizza", quantity: 1, image: "https://via.placeholder.com/40" },
-//       { name: "Coke", quantity: 2, image: "https://via.placeholder.com/40" },
-//     ],
-//   },
-
-// ];
-
-const History = ({navigation}) => {
+const History = ({ navigation }) => {
+  // states to handle selected bill and modal visibility
   const [selectedBill, setSelectedBill] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [sampleData, setSampleData] = useState([]);
-  const { customer, setCustomer, setBillItems,  isHoltBill,
-    setIsHoltBill } = useContext(BillContext);
 
+  // context to handle bill items and customer
+  const { customer, setCustomer, setBillItems, isHoltBill, setIsHoltBill } =
+    useContext(BillContext);
+
+  // ----------------- Handle Continue Bill -----------------
   const handleContinueBill = (id) => {
+
+    // native alert to confirm if the user wants to continue the bill
     Alert.alert("Continue Bill", `Do you want to continue bill #${id}?`, [
       {
         text: "Cancel",
@@ -62,14 +42,13 @@ const History = ({navigation}) => {
           setBillItems(sampleData.find((item) => item.bill_id === id).items);
           navigation.navigate("Menu");
           setIsHoltBill(true);
-          
-          
         },
       },
     ]);
-    
+
   };
 
+  // ----------------- Handle View Details -----------------
   const handleViewDetails = (bill) => {
     setSelectedBill(bill);
     setModalVisible(true);
@@ -77,30 +56,38 @@ const History = ({navigation}) => {
 
   // fetch data from backend
   const fetchDate = async () => {
+    // get the access token from async storage
     const accessToken = await AsyncStorage.getItem("accessToken");
     console.log(accessToken);
     try {
-      const response = await axios.get( "http://209.97.173.123:3003/cashier/history", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      setSampleData(response.data);
+      // fetch data from the server
+      const url = cashierUrl;
+      const response = await axios.get(
+        `${url}/cashier/history`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
-      console.log(response.data[0].items);
+      // set the fetched data to the state
+      setSampleData(response.data);
+      // console.log(response.data[0].items); // testing
     } catch (error) {
       console.error("Error:", error.message);
     }
   };
 
+  // ----------------- Render -----------------
   useEffect(() => {
     fetchDate();
   }, []);
 
+  // ----------------- Render -----------------
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bill History</Text>
-
       <ScrollView>
         {/* Card Layout for Bills */}
         {sampleData.map((item) => (
@@ -146,14 +133,18 @@ const History = ({navigation}) => {
 
             {selectedBill && (
               <View>
-                <Text style={styles.modalText}>Bill ID: {selectedBill.bill_id}</Text>
+                <Text style={styles.modalText}>
+                  Bill ID: {selectedBill.bill_id}
+                </Text>
                 <Text style={styles.modalText}>
                   Total: ${selectedBill.total_price.toFixed(2)}
                 </Text>
                 <Text style={styles.modalText}>
                   Phone: {selectedBill.customer_phone}
                 </Text>
-                <Text style={styles.modalText}>Date: {selectedBill.date_time}</Text>
+                <Text style={styles.modalText}>
+                  Date: {selectedBill.date_time}
+                </Text>
                 <Text style={styles.modalText}>
                   Status:{" "}
                   {selectedBill.status === 0 ? "Incomplete" : "Completed"}
@@ -187,6 +178,7 @@ const History = ({navigation}) => {
   );
 };
 
+// ----------------- Styles -----------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,

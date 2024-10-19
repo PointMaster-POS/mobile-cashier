@@ -27,7 +27,8 @@
     "react-native": "0.74.5",
     "react-native-elements": "^3.4.3",
     "react-native-flash-message": "^0.4.2",
-    "react-native-gesture-handler": "^2.19.0",
+    "react-native-gesture-handler": "^2.20.0",
+    "react-native-reanimated": "^3.16.0",
     "react-native-vector-icons": "^10.1.0",
     "webdriverio": "^9.0.9"
   },

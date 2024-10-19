@@ -14,23 +14,28 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 import BarcodeScanner from "./customerbarcodescanner"; // Importing the BarcodeScanner component
+import { cashierUrl } from "../../apiurl";
 
 const CheckOutCustomer = () => {
+  // states to handle modal visibility and phone number and context
   const { customer, setCustomer } = useContext(BillContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isScannerVisible, setIsScannerVisible] = useState(false); // State for showing scanner
 
+  // ----------------- Handle Modal Visibility -----------------
   const handleOpenAddCustomerModel = () => {
     setIsModalVisible(true);
   };
 
+  // ----------------- Handle Save Customer -----------------
   const handleSaveCustomer = async () => {
     const accessToken = await AsyncStorage.getItem("accessToken");
 
     try {
+      const url = cashierUrl;
       const response = await axios.get(
-        `http://209.97.173.123:3003/cashier/customer/${phoneNumber}`,
+        `${url}/cashier/customer/${phoneNumber}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -63,6 +68,7 @@ const CheckOutCustomer = () => {
     }
   };
 
+  // ----------------- Render -----------------
   return (
     <View>
       {customer ? (
@@ -78,9 +84,7 @@ const CheckOutCustomer = () => {
               <Text style={styles.customerText}>
                 Customer: {customer.customer_name}
               </Text>
-              <Text style={styles.tableText}>
-                Points: {customer.points}
-              </Text>
+              <Text style={styles.tableText}>Points: {customer.points}</Text>
             </View>
           </View>
           <View style={styles.editButtonContainer}>
@@ -102,51 +106,58 @@ const CheckOutCustomer = () => {
 
       {/* Modal for adding customer */}
       {isModalVisible && (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Customer</Text>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => setIsModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Add Customer</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Phone Number"
-              value={phoneNumber}
-              keyboardType="phone-pad"
-              onChangeText={setPhoneNumber}
-            />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Phone Number"
+                value={phoneNumber}
+                keyboardType="phone-pad"
+                onChangeText={setPhoneNumber}
+              />
 
-            <View style={styles.modalButtons}>
-              <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
-              <Button title="Save" onPress={handleSaveCustomer} />
-            </View>
-
-            {/* Toggle Barcode Scanner visibility */}
-            <Button
-              title={isScannerVisible ? "Hide Scanner" : "Show Scanner"}
-              onPress={() => setIsScannerVisible(!isScannerVisible)}
-              styles={styles.scannerButton}
-            />
-
-            {/* Display Barcode Scanner if visible */}
-            {isScannerVisible && (
-              <View style={styles.scannerContainer}>
-                <BarcodeScanner addCustomerToBill={setCustomer} isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} />
+              <View style={styles.modalButtons}>
+                <Button
+                  title="Cancel"
+                  onPress={() => setIsModalVisible(false)}
+                />
+                <Button title="Save" onPress={handleSaveCustomer} />
               </View>
-            )}
+
+              {/* Toggle Barcode Scanner visibility */}
+              <Button
+                title={isScannerVisible ? "Hide Scanner" : "Show Scanner"}
+                onPress={() => setIsScannerVisible(!isScannerVisible)}
+                styles={styles.scannerButton}
+              />
+
+              {/* Display Barcode Scanner if visible */}
+              {isScannerVisible && (
+                <View style={styles.scannerContainer}>
+                  <BarcodeScanner
+                    addCustomerToBill={setCustomer}
+                    isModalVisible={isModalVisible}
+                    setIsModalVisible={setIsModalVisible}
+                  />
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
       )}
     </View>
   );
 };
 
-export default CheckOutCustomer;
+// ----------------- Styles -----------------
 
 const styles = StyleSheet.create({
   customerDContainer: {
@@ -207,7 +218,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)", // Dim background
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
     width: 350,
@@ -239,10 +250,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
-    
   },
   scannerContainer: {
-    height: 200, // Adjust the height of the scanner
+    height: 200,
     marginTop: 20,
     borderRadius: 10,
     overflow: "hidden",
@@ -251,6 +261,7 @@ const styles = StyleSheet.create({
   scannerButton: {
     marginBottom: 20,
     backgroundColor: "#5e48a6",
-    
   },
 });
+
+export default CheckOutCustomer;

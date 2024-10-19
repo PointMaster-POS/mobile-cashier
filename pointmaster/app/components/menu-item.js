@@ -2,10 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { AntDesign } from "react-native-vector-icons";
 import { BillContext } from "../../context/billcontext";
-import { Buffer } from "buffer";
+import { Buffer } from "buffer"; //not needed 
 
 const MenuItem = ({ item }) => {
-  const { increaseQuantity, decreaseQuantity ,setItemQuantity} = useContext(BillContext);
+  // Get the quantity from the context and set it to the state
+  const { increaseQuantity, decreaseQuantity, setItemQuantity } =
+    useContext(BillContext);
+
+
+  // ----------------- Base 64 image for testing purposes -----------------
   // const [base64Image, setBase64Image] = useState("");
 
   // useEffect(() => {
@@ -21,18 +26,14 @@ const MenuItem = ({ item }) => {
 
   // Debugging log
   // console.log("Base64 Image (end):", base64Image.slice(-50));
-  
+
   return (
- 
-    <View style={styles.item} key={item.barcode.trim().toLowerCase()} >
-         
-      
-        <Image
-          source={{ uri: item.image_url }} 
-          style={styles.itemImage}
-          resizeMode="cover" // Ensure the image covers the container
-        />
-   
+    <View style={styles.item} key={item.barcode.trim().toLowerCase()}>
+      <Image
+        source={{ uri: item.image_url }}
+        style={styles.itemImage}
+        resizeMode="cover" // Ensure the image covers the container
+      />
       <View style={styles.itemDetails}>
         <Text style={styles.itemName}>{item.item_name}</Text>
         <Text style={styles.itemPrice}>Rs. {item.price}</Text>
@@ -57,12 +58,11 @@ const MenuItem = ({ item }) => {
           <AntDesign name="pluscircleo" size={24} color="#5e48a6" />
         </TouchableOpacity>
       </View>
-      
     </View>
-
   );
 };
 
+// ----------------- Styles -----------------
 const styles = StyleSheet.create({
   item: {
     flexDirection: "row",

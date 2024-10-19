@@ -5,12 +5,15 @@ import { BillContext } from "../../context/billcontext";
 import { AntDesign } from "react-native-vector-icons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { cashierUrl } from "../../apiurl";
 
 export default function BarcodeScanner() {
+  // states to handle camera permissions and scanned status
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const { addProductToBill } = useContext(BillContext);
 
+  // ----------------- Camera Permissions -----------------
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -20,10 +23,12 @@ export default function BarcodeScanner() {
     getBarCodeScannerPermissions();
   }, []);
 
+  // ----------------- Handle Barcode Scanned -----------------
   const handleAddItem = () => {
     setScanned(false);
   };
 
+  // ----------------- Handle Barcode Cancel -----------------
   const handleCancel = () => {
     alert("Cancel button pressed");
   };
@@ -32,14 +37,16 @@ export default function BarcodeScanner() {
     alert("Proceed button pressed");
   };
 
+  // ----------------- Fetch Relevent Data -----------------
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
 
     //fetch item from the server
     const accessToken = await AsyncStorage.getItem("accessToken");
+    const url = cashierUrl;
     try {
       const response = await axios.get(
-        `http://209.97.173.123:3003/cashier/inventory/product/barcode/${data}`,
+        `${url}/cashier/inventory/product/barcode/${data}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -48,6 +55,7 @@ export default function BarcodeScanner() {
       );
       const item = response.data;
 
+      // add item to bill
       addProductToBill(item);
       console.log(data);
     } catch (error) {
@@ -55,6 +63,7 @@ export default function BarcodeScanner() {
     }
   };
 
+  // ----------------- Render Relevent View -----------------
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
@@ -64,6 +73,7 @@ export default function BarcodeScanner() {
 
   return (
     <View style={styles.container}>
+      {/* If scanned, show Add More button, else show barcode scanner */}
       {scanned ? (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -76,6 +86,7 @@ export default function BarcodeScanner() {
         </View>
       ) : (
         <View style={styles.barcodeContainer}>
+          {/* Barcode Scanner */}
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
             style={styles.barcodeScanner}

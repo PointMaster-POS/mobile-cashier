@@ -1,52 +1,49 @@
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import BillItem from "./billitem";
-  
+
 import MenuItem from "./menu-item";
 import { AntDesign } from "react-native-vector-icons";
 import { BillContext } from "../../context/billcontext";
 
 const BillContent = () => {
-    
-    const { billItems } = useContext(BillContext);
+  // Get the bill items from the context
+  const { billItems } = useContext(BillContext);
 
-  
-
+  // ----------------- Display the bill items -----------------
   return (
     <View style={styles.billContainer}>
-     {billItems.length > 0 ? (
-      <ScrollView style={styles.outerItems}>
-        {billItems.map((item, index) => (
-          <BillItem key={index} item={item} />
-        ))}
-      </ScrollView>
-
-    ):
-    (
+      {/* If there are items in the bill, display them */}
+      {billItems.length > 0 ? (
+        <ScrollView style={styles.outerItems}>
+          {billItems.map((item, index) => (
+            <BillItem key={index} item={item} />
+          ))}
+        </ScrollView>
+      ) : (
         <View style={styles.noItemsContainer}>
-        <Text style={styles.header}>No items in the bill</Text>
-        <AntDesign name="shoppingcart" size={100} color="#5e48a6" />
+          <Text style={styles.header}>No items in the bill</Text>
+          <AntDesign name="shoppingcart" size={100} color="#5e48a6" />
         </View>
-
-    )}
+      )}
       <View style={styles.billHeaderContainer}>
-       
-       {billItems.length > 0 && (
-         <Text style={styles.totalText}>
-           Total: Rs.{" "}
-           {billItems.reduce(
-             (acc, item) => acc + item.price * item.quantity,
-             0
-           )}
-         </Text>
-       )}
-     </View>
+        {/* Display the total amount */}
+        {billItems.length > 0 && (
+          <Text style={styles.totalText}>
+            Total: Rs.{" "}
+            {billItems.reduce(
+              (acc, item) => acc + item.price * item.quantity,
+              0
+            )}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-noItemsContainer: {
+  noItemsContainer: {
     display: "flex",
     flexDirection: "column",
     height: "80%",

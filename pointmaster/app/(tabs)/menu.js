@@ -16,70 +16,31 @@ import { useNavigation } from "@react-navigation/native";
 import CheckOutButton from "../components/checkout-button";
 import MenuItem from "../components/menu-item";
 import InitialMenuItem from "../components/initialmenuitem";
-
-//nedd to fetach all the items related to selected category
-// const MenuItems = [
-//   {
-//     qr: "123456789",
-//     name: "Coca Cola",
-//     category: "Soft Drink",
-//     imageUrl:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
-//     price: 2.5,
-//   },
-//   {
-//     qr: "987654321",
-//     name: "Fanta",
-//     category: "Soft Drink",
-//     imageUrl:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
-
-//     price: 2.5,
-//   },
-//   {
-//     qr: "123123123",
-//     name: "Sprite",
-//     category: "Hot Drink",
-//     imageUrl:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
-
-//     price: 2.5,
-//   },
-//   {
-//     qr: "321321321",
-//     name: "Pepsi",
-//     category: "Soft Drink",
-//     imageUrl:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg/190px-15-09-26-RalfR-WLC-0098_-_Coca-Cola_glass_bottle_%28Germany%29.jpg",
-
-//     price: 2.5,
-//   },
-// ];
+import { cashierUrl } from "../../apiurl";
 
 const Menu = () => {
   const navigation = useNavigation();
-  //get state from bill context
 
-  //   [
-  //     {
-  //         "category_id": "2076ef49-7188-11ef-8928-0242ac120002",
-  //         "branch_id": "20578700-7188-11ef-8928-0242ac120002",
-  //         "category_name": "Electronics",
-  //         "category_location": "Aisle 1"
-  //     }
-  // ]
+  // Get the bill items, categories, selected category and setCategories from the context
+  const {
+    billItems,
+    setCategories,
+    categories,
+    selectedCategory,
+    setSelectedCategory,
+  } = useContext(BillContext);
 
-  const { billItems, setCategories, categories ,selectedCategory, setSelectedCategory} = useContext(BillContext);
- 
+  //state to store items related to the selected category
   const [items, setItems] = useState([]);
 
-  //fetach items related to the selected category
+  // ----------------- Fetch Items -----------------
   const fetchItems = async () => {
     const getToken = await AsyncStorage.getItem("accessToken");
     //fetch items from the server
     try {
+      const url = cashierUrl;
       const response = await axios.get(
-        `http://209.97.173.123:3003/cashier/inventory/products/${selectedCategory}`,
+        `${url}/cashier/inventory/products/${selectedCategory}`,
         {
           headers: {
             Authorization: `Bearer ${getToken}`,
@@ -98,35 +59,32 @@ const Menu = () => {
     fetchItems();
   }, [selectedCategory]);
 
+  // ----------------- Fetch Categories -----------------
   const fetchCategories = async () => {
     const getToken = await AsyncStorage.getItem("accessToken");
     //fetch categories from the server
     try {
       console.log("fetching categories");
-      const response = await axios.get(
-        "http://209.97.173.123:3003/cashier/inventory/categories",
-        {
-          headers: {
-            contentType: "application/json",
-            Authorization: `Bearer ${getToken}`,
-          },
-        }
-      );
+      const url = cashierUrl;
+      const response = await axios.get(`${url}/cashier/inventory/categories`, {
+        headers: {
+          contentType: "application/json",
+          Authorization: `Bearer ${getToken}`,
+        },
+      });
       setCategories(response.data);
       setSelectedCategory(response.data[0].category_id);
     } catch (error) {
       console.error("Error:", error.message);
     }
-   
   };
 
   useEffect(() => {
     //call fetchCategories function
-    
     fetchCategories();
   }, []);
 
-  //render category buttons to the screen
+  // ----------------- Render Category -----------------
 
   const renderCategory = (category) => (
     <TouchableOpacity
@@ -141,46 +99,46 @@ const Menu = () => {
     </TouchableOpacity>
   );
 
-  //render category items to the screen
-
+  // ----------------- Render Item -----------------
   const renderItem = ({ item }) => {
     return (
-    //   selectedCategory === item.category &&
-    //   (billItems.find(
-    //     (billItem) =>
-    //       billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase()
-    //   ) ? (
-    //     <MenuItem
-    //       item={billItems.find(
-    //         (billItem) =>
-    //           billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase()
-    //       )}
-    //     />
-    //   ) : (
-    //     <InitialMenuItem item={item} />
-    //   ))
-    // );
+      //   selectedCategory === item.category &&
+      //   (billItems.find(
+      //     (billItem) =>
+      //       billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase()
+      //   ) ? (
+      //     <MenuItem
+      //       item={billItems.find(
+      //         (billItem) =>
+      //           billItem.qr.trim().toLowerCase() === item.qr.trim().toLowerCase()
+      //       )}
+      //     />
+      //   ) : (
+      //     <InitialMenuItem item={item} />
+      //   ))
+      // );
 
-    //need to fetch all the items related to selected category from backend 
+      //need to fetch all the items related to selected category from backend
 
-    (billItems.find(
-      (billItem) =>
-        billItem.barcode.trim().toLowerCase() === item.barcode.trim().toLowerCase()
-    ) ? (
-      <MenuItem
-        item={billItems.find(
-          (billItem) =>
-            billItem.barcode.trim().toLowerCase() === item.barcode.trim().toLowerCase()
-        )}
-      />
-    ) : (
-      <InitialMenuItem item={item} />
-    ))
-
-    )
- 
+      billItems.find(
+        (billItem) =>
+          billItem.barcode.trim().toLowerCase() ===
+          item.barcode.trim().toLowerCase()
+      ) ? (
+        <MenuItem
+          item={billItems.find(
+            (billItem) =>
+              billItem.barcode.trim().toLowerCase() ===
+              item.barcode.trim().toLowerCase()
+          )}
+        />
+      ) : (
+        <InitialMenuItem item={item} />
+      )
+    );
   };
 
+  // ----------------- Render -----------------
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.categoriesContainer}>
@@ -189,9 +147,7 @@ const Menu = () => {
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={styles.categoriesContainer}
         >
-          {categories?.map((category) =>
-            renderCategory(category)
-          )}
+          {categories?.map((category) => renderCategory(category))}
         </ScrollView>
       </View>
       <FlatList
@@ -205,8 +161,7 @@ const Menu = () => {
   );
 };
 
-export default Menu;
-
+// ----------------- Styles -----------------
 const styles = StyleSheet.create({
   itemsContainer: {
     flex: 1,
@@ -220,7 +175,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
-
     backgroundColor: "#fff",
   },
   categoryButton: {
@@ -242,3 +196,5 @@ const styles = StyleSheet.create({
     color: "#5e48a6",
   },
 });
+
+export default Menu;

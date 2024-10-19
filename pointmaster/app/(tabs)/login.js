@@ -5,24 +5,29 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
+import { authUrl } from "../../apiurl";
 
 const LoginScreen = () => {
+  // navigation to menu page
   const navigation = useNavigation();
 
   // States to handle user input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // ----------------- Handle Login -----------------
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://209.97.173.123:3002/employee/login", {
+      const url = authUrl;
+      const response = await axios.post(`${url}/employee/login`, {
         email,
         password,
       });
 
       if (response.data.error) {
+        // Show error message if login fails
         showMessage({
-          message: response.data.error,
+          message: "Login failed, invalid email or password",
           type: "danger",
           color: "#fff",
           backgroundColor: "#5e48a6",
@@ -31,7 +36,7 @@ const LoginScreen = () => {
         });
       } else {
         // Store the token and navigate to Menu
-        await AsyncStorage.setItem("accessToken", response.data.accessToken); 
+        await AsyncStorage.setItem("accessToken", response.data.accessToken);
         showMessage({
           message: "Login successful",
           type: "success",
@@ -46,6 +51,7 @@ const LoginScreen = () => {
         });
       }
     } catch (error) {
+      // Handle error
       showMessage({
         message: "Error: " + error.message,
         type: "danger",
@@ -58,6 +64,7 @@ const LoginScreen = () => {
     }
   };
 
+  // ----------------- Render -----------------
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.headerText}>PointMaster</Text>
@@ -84,7 +91,7 @@ const LoginScreen = () => {
   );
 };
 
-// Styles for login screen
+//  ----------------- Styles -----------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,
