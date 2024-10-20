@@ -4,7 +4,6 @@ import axios from "axios";
 
 export const BillContext = createContext();
 
-
 export const BillProvider = ({ children }) => {
   const [categories, setCategories] = useState(null);
   const [billItems, setBillItems] = useState([]);
@@ -13,13 +12,31 @@ export const BillProvider = ({ children }) => {
   const [customer, setCustomer] = useState(null);
   const [isHoltBill, setIsHoltBill] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
- 
+  const [discount, setDiscount] = useState(0);
 
+  // Calculate total and discount whenever billItems change
+  useEffect(() => {
+    const newTotal = billItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    setTotal(newTotal);
+    
+    const newDiscount = billItems.reduce(
+      (acc, item) => acc + item.discount * item.quantity,
+      0
+    );
+    setDiscount(newDiscount);
 
+    console.log("Updated total: ", newTotal);
+    console.log("Updated discount: ", newDiscount);
+  }, [billItems]);
+
+  // ----------------- Add Product to Bill -----------------
   const addProductToBill = (item) => {
     const qrCode = item?.barcode?.trim().toLowerCase();
     if (!qrCode) return;
-    //check if the item already exists in the bill
+
     const existingItem = billItems.find(
       (billItem) => billItem.barcode.trim().toLowerCase() === qrCode
     );
@@ -37,59 +54,47 @@ export const BillProvider = ({ children }) => {
       setBillItems([...billItems, newItem]);
     }
     setI(i + 1);
-    setTotal(
-      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    );
-    console.log("total" + total);
   };
 
+  // ----------------- Increase Quantity -----------------
   const increaseQuantity = (barcode) => {
     const qrCode = barcode?.trim().toLowerCase();
     if (!qrCode) return;
 
-
     const updatedItems = billItems.map((billItem) => {
       if (billItem.barcode.trim().toLowerCase() === qrCode) {
-        if (billItem.quantity ) {
-          return { ...billItem, quantity: billItem.quantity + 1 };
-        } else {
-          return { ...billItem, quantity: 1 };
-        }
+        return { ...billItem, quantity: billItem.quantity + 1 };
       }
       return billItem;
     });
     setBillItems(updatedItems);
     setI(i + 1);
-    setTotal(
-      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    );
-    console.log("total" + total);
   };
 
+  // ----------------- Decrease Quantity -----------------
   const decreaseQuantity = (barcode) => {
     const qrCode = barcode?.trim().toLowerCase();
     if (!qrCode) return;
 
-    const updatedItems = billItems.map((billItem) => {
-      if (billItem.barcode.trim().toLowerCase() === qrCode) {
-        if (billItem.quantity === 1) {
-          return billItem;
-        } else {
-
-        return { ...billItem, quantity: Math.max(billItem.quantity - 1, 1) };
+    const updatedItems = billItems
+      .filter((billItem) => {
+        if (billItem.barcode.trim().toLowerCase() === qrCode && billItem.quantity === 1) {
+          return false;
         }
-      }
-      return billItem;
-    });
+        return true;
+      })
+      .map((billItem) => {
+        if (billItem.barcode.trim().toLowerCase() === qrCode) {
+          return { ...billItem, quantity: billItem.quantity - 1 };
+        }
+        return billItem;
+      });
+
     setBillItems(updatedItems);
     setI(i - 1);
-    //calculate total and set
-    setTotal(
-      billItems.reduce((acc, item) => acc + item.price * item.quantity?item.quantity: 0 , 0)
-    );
-    console.log("total" + total);
   };
 
+  // ----------------- Set Item Quantity -----------------
   const setItemQuantity = (barcode, quantity) => {
     const qrCode = barcode?.trim().toLowerCase();
     if (!qrCode) return;
@@ -102,13 +107,9 @@ export const BillProvider = ({ children }) => {
     });
     setBillItems(updatedItems);
     setI(i);
-    //calculate total and set
-    setTotal(
-      billItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    );
-    console.log("total" + total);
   };
 
+  // ----------------- Clear Bill -----------------
   const clearBill = () => {
     setCustomer(null);
     setBillItems([]);
@@ -131,12 +132,12 @@ export const BillProvider = ({ children }) => {
         setCustomer,
         setBillItems,
         i,
+        discount,
         isHoltBill,
-        setIsHoltBill,  
-        selectedCategory, 
+        setIsHoltBill,
+        selectedCategory,
         setSelectedCategory,
-        setItemQuantity
-
+        setItemQuantity,
       }}
     >
       {children}

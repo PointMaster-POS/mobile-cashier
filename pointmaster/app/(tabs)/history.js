@@ -139,9 +139,11 @@ const History = ({ navigation }) => {
                 <Text style={styles.modalText}>
                   Total: ${selectedBill.total_price.toFixed(2)}
                 </Text>
+                {selectedBill.customer_phone && (
                 <Text style={styles.modalText}>
                   Phone: {selectedBill.customer_phone}
                 </Text>
+                )}
                 <Text style={styles.modalText}>
                   Date: {selectedBill.date_time}
                 </Text>
@@ -149,6 +151,7 @@ const History = ({ navigation }) => {
                   Status:{" "}
                   {selectedBill.status === 0 ? "Incomplete" : "Completed"}
                 </Text>
+                <Text style={styles.modalText}>Discount: {selectedBill.discount}</Text>
 
                 <Text style={styles.modalSubTitle}>Items:</Text>
                 {selectedBill.items.map((item, index) => (

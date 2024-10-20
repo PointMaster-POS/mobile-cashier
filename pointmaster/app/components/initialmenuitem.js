@@ -14,11 +14,14 @@ const InitialMenuItem = ({ item }) => {
   const { addProductToBill } = useContext(BillContext);
   const [isImageLoading, setIsImageLoading] = useState(true);
 
-    // ----------------- Display the initial menu item -----------------
+  // ----------------- Display the initial menu item -----------------
   return (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => addProductToBill(item)}
+      onPress={() => {
+        addProductToBill(item);
+        
+      }}
       key={item.barcode.trim().toLowerCase()}
     >
       <Image source={{ uri: item.image_url }} style={styles.itemImage} />
