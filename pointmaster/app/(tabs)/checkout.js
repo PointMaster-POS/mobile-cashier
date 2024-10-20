@@ -18,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { cashierUrl } from "../../apiurl";
 
 const Checkout = () => {
   const navigation = useNavigation();
@@ -34,7 +35,8 @@ const Checkout = () => {
     decreaseQuantity,
     customer,
     isHoltBill,
-    setIsHoltBill
+    setIsHoltBill,
+    discount,
 
   } = useContext(BillContext);
 
@@ -46,8 +48,9 @@ const Checkout = () => {
     if (customer) {
       try {
         // Use POST instead of GET so you can send a body
+        const url = cashierUrl;
         const response = await axios.post(
-          `http://localhost:3003/cashier/loyalty/eligibility`,
+          `${url}/cashier/loyalty/eligibility`,
           { customer_id: customer.customer_id }, // The body with customer_id
           {
             headers: {
@@ -57,7 +60,7 @@ const Checkout = () => {
           }
         );
 
-        console.log(response.data);
+        console.log({"elegibility ---------------> " :response.data});
 
         if (response.data.error) {
           showMessage({
@@ -117,6 +120,7 @@ const Checkout = () => {
   */
   //post request to send the bill details to the backend
   const sendBillDetails = async (hold) => {
+    setIsHoltBill(hold);
     const reducedItems = billItems.map((item) => {
       return {
         item_id: item.item_id,
@@ -130,7 +134,7 @@ const Checkout = () => {
       total_amount: total,
       items_list: reducedItems,
       loyalty_points_redeemed: isRedeem ? 1 : 0,
-      discount: 0,
+      discount: discount,
       received: total,
       customer_phone: customer &&  customer.customer_phone,
       status: hold ? 0 : 1,
@@ -239,7 +243,7 @@ const Checkout = () => {
       <Image source={{ uri: item.image_url }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemName}>{item.item_name}</Text>
-        <Text style={styles.itemPrice}>${item.discount}</Text>
+        <Text style={styles.itemPrice}>Rs. {item.discount}</Text>
       </View>
       <View style={styles.itemQuantity}>
         <TouchableOpacity
@@ -366,13 +370,17 @@ const Checkout = () => {
               <View style={styles.billDetailsContainer}>
                 <View style={styles.billRow}>
                   <Text style={styles.billLabel}>Total</Text>
-                  <Text>${total}</Text>
+                  <Text>Rs. {total}</Text>
                 </View>
                 <View style={styles.billRow}>
                   <Text style={styles.billLabel}>Payment Method</Text>
                   <Text>
                     {paymentMethod === "cash" ? "Cash" : "Debit/Credit Card"}
                   </Text>
+                </View>
+                <View style={styles.billRow}>
+                  <Text style={styles.billLabel}>Discount</Text>
+                  <Text>Rs. {discount}</Text>
                 </View>
                 <View style={styles.billRow}>
                   {isRedeem && (
@@ -391,7 +399,7 @@ const Checkout = () => {
                 }}
                 onLongPress={() => {sendBillDetails(true); setIsHoltBill(true)}}
               >
-                <Text style={styles.modalButtonText}>Pay</Text>
+                <Text style={styles.modalButtonText}>Pay/Hold</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
