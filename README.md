@@ -45,7 +45,9 @@
     <li><strong>Hardware Interface:</strong> The app may interact with mobile device features, such as camera access for QR code scanning, to enhance user experience.</li>
 </ul>
 
-![mobile images](https://github.com/user-attachments/assets/3a41c17a-ff1f-461e-b2e7-386bea810d8c)
+
+
+![Untitled design](https://github.com/user-attachments/assets/983cb516-dc70-486b-86b4-4c2ebe591f70)
 
 
 
